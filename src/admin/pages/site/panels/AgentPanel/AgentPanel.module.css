@@ -22,8 +22,7 @@
   max-height: calc(100vh - 16px);
   display: flex;
   flex-direction: column;
-  background: var(--bg-surface);
-  backdrop-filter: blur(var(--panel-blur));
+  background: transparent;
   border: 1px solid var(--overlay-10);
   border-radius: 12px;
   box-shadow: var(--shadow-panel);
@@ -47,7 +46,6 @@
   border: 0;
   border-radius: 0;
   box-shadow: none;
-  backdrop-filter: none;
   background: transparent;
   will-change: auto;
   transform: none;

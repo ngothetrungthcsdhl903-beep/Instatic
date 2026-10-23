@@ -1,6 +1,6 @@
-# Instatic Docs
+# Keijam Docs
 
-The documentation tree for Instatic. This index tells you what to read, in what order, and where to look for what.
+The documentation tree for Keijam (built on the Instatic engine). This index tells you what to read, in what order, and where to look for what.
 
 If you're an agent: start at `CLAUDE.md` (repo root) for the rules, then come here for the explanations.
 If you're a human contributor: start with [`architecture.md`](architecture.md), then read whichever feature or reference page is closest to what you're changing.
@@ -62,6 +62,12 @@ docs/
 │   ├── react-compiler.md           ← memoization rule, three exceptions, gates
 │   └── use-async-resource.md       ← canonical async load hook; when to use vs. not
 │
+├── memory/                     ← owner decisions that override earlier notes
+│   ├── projectbrief.md             ← what Keijam is and what Phase 1 covers
+│   ├── techContext.md               ← stack, ports, knip / size-limit / visualizer
+│   ├── activeContext.md             ← current focus and next step
+│   ├── progress.md                  ← Phase 1 done and left
+│   └── decisions.md                 ← Figma UI3 density, blue accent, Lucide, fake glass
 ├── deployment/                 ← operator docs (running the thing)
 └── e2e/                        ← browser test protocols (agent-run + Playwright automation)
 ```
@@ -162,6 +168,8 @@ Three categories, three voices:
 | [features/html-import.md](features/html-import.md)               | HTML string → `PageNode` fragment (paste HTML, AI `insertHtml` tool) |
 | [features/editor-preferences.md](features/editor-preferences.md) | Catalog-driven local UI preferences for the editor                   |
 | [features/canvas-iframe-per-frame.md](features/canvas-iframe-per-frame.md) | Per-breakpoint iframe rendering in the visual editor canvas |
+| [features/keijam-editor.md](features/keijam-editor.md)                     | Keijam design surface: free/stack layout, direct manipulation, `--k-*` tokens |
+| [memory/](memory/projectbrief.md)                                          | Phase 1 brief, tech context, progress, and decisions (UI3, accent, Lucide, fake glass) |
 
 ### Reference
 

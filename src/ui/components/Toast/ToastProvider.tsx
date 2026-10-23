@@ -150,6 +150,7 @@ function ToastItem({ toast }: { toast: Toast }) {
       role={ariaRoleForKind(toast.kind)}
       aria-live={toast.kind === 'error' || toast.kind === 'warning' ? 'assertive' : 'polite'}
       className={cn(styles.toast, styles[`kind-${toast.kind}`])}
+      data-k-material="regular"
       data-toast-kind={toast.kind}
       data-toast-location={toast.location}
     >

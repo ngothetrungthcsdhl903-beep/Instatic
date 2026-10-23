@@ -3,7 +3,7 @@
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
-  background: var(--bg-body);
+  background: var(--k-color-bg-canvas);
 }
 
 .editorBody {
@@ -12,6 +12,13 @@
   flex: 1;
   min-height: 0;
   overflow: hidden;
+}
+
+.designModeButton {
+  position: absolute;
+  z-index: 4;
+  top: var(--space-s);
+  left: var(--space-s);
 }
 
 .canvasStage {

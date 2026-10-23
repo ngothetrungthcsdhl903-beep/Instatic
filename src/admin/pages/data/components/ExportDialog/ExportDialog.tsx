@@ -388,7 +388,7 @@ export function ExportDialog({
     <Dialog
       open={open}
       onClose={onClose}
-      eyebrow="Instatic"
+      eyebrow="Keijam"
       title="Export site"
       size="2xl"
       bodyClassName={styles.body}

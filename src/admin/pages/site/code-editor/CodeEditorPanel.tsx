@@ -229,6 +229,7 @@ export function CodeEditorPanel({ runtimeValidation }: CodeEditorPanelProps) {
       // panelPositionStyle injects --panel-x / --panel-y CSS vars (whitelisted)
       style={panelPositionStyle}
       className={cn(styles.panel, (!hasActivePreview || !codeEditorPanelOpen) && styles.panelHidden)}
+      data-k-material="regular"
     >
       <div className={styles.inner}>
         {/* ── Shared Panel Header ──────────────────────────────────────────── */}

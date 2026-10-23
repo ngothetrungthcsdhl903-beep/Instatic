@@ -133,7 +133,7 @@ export function AdminPreAuthForm({
   // in place of the default icon AND swap the "Instatic" label for
   // the operator-configured site name. When neither is set, keep the
   // default mark + product name so a fresh clone still looks like itself.
-  const brandLabel = publicSite.name ?? 'Instatic'
+  const brandLabel = publicSite.name ?? 'Keijam'
 
   const onSubmit =
     phase === 'setup' ? handleSetup :

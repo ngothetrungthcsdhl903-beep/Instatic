@@ -1,3 +1,6 @@
+@import "../../design-system/tokens.css";
+@import "./materials.css";
+
 @font-face {
     font-family: "Inter Variable";
     font-style: normal;
@@ -214,7 +217,9 @@
 
     /* Shadows and focus */
     --focus-ring: 0 0 0 1px var(--overlay-20);
-    --panel-blur: 24px;
+
+    /* Keijam color lives in design-system/tokens.css (`--k-*`). */
+    --panel-blur: 0px;
     --shadow-panel-inset-bottom: inset 0 -1px 0 var(--scrim-40);
     --shadow-panel-drop: 0 12px 40px rgba(0, 0, 0, 0.65);
     --shadow-panel: var(--shadow-panel-inset-bottom), var(--shadow-panel-drop);

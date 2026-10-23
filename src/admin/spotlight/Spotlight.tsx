@@ -354,6 +354,7 @@ export function Spotlight({ isClosing = false }: SpotlightProps): ReactNode {
         aria-modal="true"
         aria-label="Command palette"
         className={styles.panel}
+        data-k-material="thick"
         data-state={dialogState}
         onClick={(e) => e.stopPropagation()}
       >

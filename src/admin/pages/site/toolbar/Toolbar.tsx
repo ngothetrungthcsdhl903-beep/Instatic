@@ -173,6 +173,7 @@ export function Toolbar({
         aria-label="Editor toolbar"
         data-testid="toolbar"
         className={styles.header}
+        data-k-material="regular"
       >
         {/* ── Left section ────────────────────────────────────────────────── */}
 

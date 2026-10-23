@@ -219,6 +219,7 @@ export function applyEditorAppearancePreferencesToDocument(
   doc.documentElement.setAttribute('data-editor-density', prefs.density)
   doc.documentElement.setAttribute('data-editor-theme', prefs.theme)
   doc.documentElement.setAttribute('data-editor-text-scale', prefs.textScale)
+  doc.documentElement.setAttribute('data-theme', prefs.theme === 'light' ? 'light' : 'dark')
 }
 
 export function useEditorAppearancePreferences(): EditorAppearancePreferences {

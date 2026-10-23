@@ -1,0 +1,15 @@
+# Decisions
+
+Later entries win. Keep this file short. Detail lives in `design-system/DESIGN_SYSTEM.md`.
+
+- 2026-10-23: Base is Instatic (MIT). Keep that copyright in LICENSE. Revyme and Webstudio are AGPL — ideas only, never code. New dependencies are MIT, ISC, BSD, or Apache-2.0.
+- 2026-10-23: Neutral gray UI. One blue accent. The token is `--k-color-accent` (light `#0A66E0`, dark `#1F6FEB`), plus the generated hover, pressed, subtle, text, and on-accent tokens. The kit name `--k-accent` means `--k-color-accent`. The earlier `--kj-accent` / `#2A68F1` ramp is retired. No hardcoded accent hex in components.
+- 2026-10-23: Figma UI3 is the reference for layout density, type scale, and gray tones. Do not copy Figma logos, icons, or brand assets.
+- 2026-10-23: Icons are monochrome only. Use Lucide outline icons everywhere, stroke 1.5, 16px. Color is `currentColor`, inheriting the text or icon token. Accent is allowed only on the active or selected state. No multicolor icons, filled-color icons, or emoji icons. This overrides pixel-art icons and any second icon set. Phase 1 code still renders pixel-art icons; the next icon change replaces them with Lucide and updates `no-third-party-icons.test.ts` in the same change.
+- 2026-10-23: Editor workflow target is Framer: left Pages / Layers / Assets, breakpoint frames side by side, inspector sections for position, size, layout, styles, effects, and interactions. This overrides Figma UI3 as the workflow reference. Density and grays still follow the UI3 note above. Do not copy Framer assets or code. Phase 1 shipped Layers / Insert and Design / Prototype, not the full Framer panel.
+- 2026-10-23: Fake glass on all chrome (panels, toolbars, sidebars, menus, popovers, dialogs, toasts, tooltips). Semi-opaque fill (~72% / 80% / 85%), top-to-bottom sheen, 1px inner top highlight, soft shadow, 6px feather mask, cached `/brand/noise.png`. Levels `thin` / `regular` / `thick` come from `design-system/gen.py`. `--k-material-*-blur` is `0px`. No `backdrop-filter`. Canvas and frames stay solid. `prefers-reduced-transparency` uses `--k-material-solid-fallback`. This overrides “blur only on floating chrome”.
+- 2026-10-23: `design-system/gen.py` is the source of truth for `--k-*`. Do not hand-edit `tokens.css` or `tokens.json`. `python3 check.py` must print `FAILS 0`.
+- 2026-10-23: Inputs at rest use `border: 1px solid var(--k-color-control-border)` (WCAG 1.4.11 at 3:1). Hover is `--k-color-border-strong`. Focus is a 1px accent border plus `--k-color-focus-ring`.
+- 2026-10-23: UI text is Inter, already loaded. Do not ship San Francisco.
+- 2026-10-23: The product mark is the official monochrome logo, tinted with `currentColor`, not the accent. Phase 1 has not installed those files yet. `public/brand/noise.png` is the glass noise tile.
+- 2026-10-23: Editor JS budget is the Site editor body chunk, ≤ 300 KB gzip, checked by `bun run size`. Drag stays on the compositor: no live filters, no backdrop blur.

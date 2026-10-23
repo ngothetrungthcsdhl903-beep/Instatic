@@ -39,10 +39,6 @@ export function isMandatoryField(fieldId: string): boolean {
   return (POST_TYPE_MANDATORY_FIELD_IDS as readonly string[]).includes(fieldId)
 }
 
-export function isOptionalBuiltIn(field: DataField): boolean {
-  return field.builtIn === true && !isMandatoryField(field.id)
-}
-
 /**
  * A built-in field on a SYSTEM table — frozen for everyone (the server rejects
  * edits/removals via `assertSystemTableUpdateAllowed`). Unlike a post type's
@@ -68,18 +64,6 @@ export function isFieldDeletable(field: DataField, table: DataTable): boolean {
   if (field.id === table.primaryFieldId) return false
   if (isFieldFullyLocked(field, table)) return false
   return true
-}
-
-/** Tooltip text for a disabled delete button, if applicable. */
-export function deleteTooltip(field: DataField, table: DataTable): string | undefined {
-  if (field.id === table.primaryFieldId) return 'Cannot delete the primary field'
-  if (table.kind === 'postType' && isMandatoryField(field.id)) {
-    return 'Required by all post types — cannot be deleted'
-  }
-  if (isSystemBuiltInField(field, table)) {
-    return 'Built-in field on a system table — cannot be deleted'
-  }
-  return undefined
 }
 
 /** Whether the label input should be locked for this field. */

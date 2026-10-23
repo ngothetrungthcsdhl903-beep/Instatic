@@ -1,0 +1,25 @@
+---
+description: Keijam design-system tokens and fake-glass chrome. Read before changing admin or UI color, type, or materials.
+globs:
+  - src/**/*.css
+  - src/**/*.tsx
+  - design-system/**
+alwaysApply: false
+---
+
+# Keijam design system
+
+`design-system/` is the source of truth. Edit `gen.py`, then run `python3 gen.py && python3 check.py` from that directory. Do not hand-edit `tokens.css` or `tokens.json`. `check.py` must print `FAILS 0`.
+
+Figma UI3 is the reference for density, type scale, and neutral grays. Do not copy Figma logos, icons, or brand assets. Color is neutral except one blue accent.
+
+- Colors, type, radii, layout, and materials are `--k-*` from `tokens.css` (imported by `src/styles/globals.css`). The accent is `--k-color-accent` (kit shorthand `--k-accent`). Surfaces are `--k-color-bg-*`, text is `--k-color-fg-*`, borders are `--k-color-border` and `--k-color-control-border`, danger is `--k-color-danger`. Do not add `--kj-accent` or a second accent ramp.
+- Accent is for selection, focus, and primary action. Everything else stays gray.
+- Type follows the generated scale (`type-body` 13, `type-label` 12, `type-caption` 11). Spacing is the 4px `--k-space-*` grid. Toolbar height is `--k-layout-toolbar-height` (44).
+- Icons are monochrome Lucide outlines everywhere. 16px (`--k-control-icon-md`), stroke `--k-control-icon-stroke` (1.5). Color is `currentColor`, inheriting the text or icon token. Accent (`--k-color-accent`) is only for the active or selected state. No multicolor icons, filled-color icons, emoji icons, or inline SVG. Do not add a second icon set.
+- Focus ring: `outline: 2px solid var(--k-color-focus-ring)`.
+- Chrome (panels, toolbars, sidebars, menus, popovers, dialogs, toasts, tooltips) uses fake glass: `data-k-material="thin|regular|thick"` and `src/styles/materials.css`. Canvas and frames stay solid.
+- Do not set `backdrop-filter`. `--k-material-*-blur` stays `0px`. Noise is the cached `/brand/noise.png`, not a filter.
+- `prefers-reduced-transparency` already maps materials to `--k-material-solid-fallback` in the generated CSS. Do not invent a second fallback.
+- Inputs at rest use `var(--k-color-control-border)`. No hardcoded hex, rgb, or hsl in admin or ui CSS modules, and no `var(--token, fallback)`.
+- Decisions: `docs/memory/decisions.md`. Spec: `design-system/DESIGN_SYSTEM.md`.

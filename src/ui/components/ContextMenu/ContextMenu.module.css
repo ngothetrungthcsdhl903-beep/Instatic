@@ -8,9 +8,8 @@
     overflow: hidden;
     padding: var(--space-3xs);
     border: 0;
-    border-radius: 16px;
-    background: var(--bg-surface-3);
-    box-shadow: 0 12px 28px var(--scrim-50);
+    border-radius: var(--k-radius-lg);
+    background: transparent;
     /* Anchor the subtle scale to the menu's top edge — the menu drops down
        from the click point / trigger, so growing from the top reads natural. */
     transform-origin: top center;

@@ -277,6 +277,7 @@ export function ContextMenuSubmenu({
           role="menu"
           aria-label={typeof label === 'string' ? label : undefined}
           className={styles.menu}
+          data-k-material="thick"
           data-scrollable={maxHeight != null ? '' : undefined}
           data-side={position?.side}
           // Play the entrance keyframes once the panel is measured and shown.

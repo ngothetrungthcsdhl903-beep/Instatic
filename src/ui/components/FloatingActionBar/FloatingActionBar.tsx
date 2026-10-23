@@ -107,6 +107,7 @@ export function FloatingActionBar({
   return (
     <div
       className={cn(styles.bar, exiting && styles.exiting, className)}
+      data-k-material="regular"
       role="toolbar"
       aria-label={ariaLabel}
     >

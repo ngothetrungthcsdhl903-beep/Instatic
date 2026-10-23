@@ -7,7 +7,7 @@
     width: 100%;
     box-sizing: border-box;
     background: transparent;
-    border: 1px solid var(--overlay-20);
+    border: 1px solid var(--k-color-control-border);
     border-radius: var(--input-radius);
     color: var(--text);
     cursor: pointer;
@@ -21,7 +21,7 @@
 .select:focus-within,
 .select[data-open="true"] {
     background: transparent;
-    border-color: var(--overlay-50);
+    border-color: var(--k-color-accent);
 }
 
 .select[data-open="true"] {

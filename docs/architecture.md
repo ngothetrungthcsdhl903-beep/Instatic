@@ -1,8 +1,8 @@
 # Architecture
 
-System-level overview of Instatic — what runs, what depends on what, and where to look first.
+System-level overview of Keijam — what runs, what depends on what, and where to look first.
 
-Instatic is a self-hosted CMS with a built-in visual editor. One Bun process serves the public website, the admin editor, the CMS API, published pages, and uploaded media, backed by either Postgres or SQLite. The visual editor's output is plain semantic HTML and hand-clean CSS — no framework runtime is injected into published pages.
+Keijam is a self-hosted visual web design tool on the Instatic engine. One Bun process serves the public website, the admin editor, the CMS API, published pages, and uploaded media, backed by either Postgres or SQLite. The design surface (`src/admin/pages/site/keijam/`, model in `src/keijam/`) writes the same page tree and style rules the publisher already turns into plain semantic HTML and hand-clean CSS. See [`features/keijam-editor.md`](features/keijam-editor.md).
 
 ---
 

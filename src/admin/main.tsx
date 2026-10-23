@@ -23,6 +23,13 @@ import { installBranchRequestHeaders } from './state/activeBranch'
 // chunk) so the publisher / page-tree / sanitize stack stays out of the
 // eager entry bundle. See src/modules/base/index.ts.
 
+// Dev-only render overlay. The dynamic import sits inside `import.meta.env.DEV`
+// so the production build drops react-scan entirely.
+if (import.meta.env.DEV) {
+  const { scan } = await import('react-scan')
+  scan({ enabled: true })
+}
+
 const rootElement = document.getElementById('root')
 if (!rootElement) throw new Error('Root element #root not found')
 

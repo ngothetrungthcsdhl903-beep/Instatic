@@ -228,6 +228,7 @@ export function AgentPanel({
           ? { ...panelPositionStyle, ...panelSizeStyle }
           : undefined
       }
+      data-k-material={variant === 'docked' ? undefined : 'regular'}
       className={cn(
         styles.floatPanel,
         variant === 'docked' && styles.floatPanelDocked,

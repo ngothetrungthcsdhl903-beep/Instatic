@@ -32,7 +32,9 @@ export function coerceCount(raw: number | string | null | undefined): number {
  * SQLite returns numbers, both can be `null` for an empty set. Aliased
  * separately so call sites read as "this is a byte count" at a glance.
  */
-export const coerceBytes = coerceCount
+export function coerceBytes(raw: number | string | null | undefined): number {
+  return coerceCount(raw)
+}
 
 /**
  * Group counts of `data_rows.status` for a single table. Returns

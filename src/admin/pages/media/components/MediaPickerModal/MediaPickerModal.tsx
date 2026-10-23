@@ -186,6 +186,7 @@ function MediaPickerModalBody({
     >
       <div
         className={styles.dialog}
+        data-k-material="thick"
         role="dialog"
         aria-modal="true"
         aria-label={pickerTitle(mediaKind)}

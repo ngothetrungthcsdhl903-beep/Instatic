@@ -164,6 +164,7 @@ function ViewerForAsset({ editor, onClose }: ViewerForAssetProps) {
     <aside
       ref={setPanelRef}
       className={styles.window}
+      data-k-material="regular"
       role="dialog"
       aria-label={`Viewer: ${asset.filename}`}
       data-testid="media-viewer-window"

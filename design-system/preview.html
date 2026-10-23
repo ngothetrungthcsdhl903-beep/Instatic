@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <title>Keijam materials</title>
+    <link rel="stylesheet" href="./tokens.css" />
+    <link rel="stylesheet" href="../src/styles/materials.css" />
+    <style>
+      html, body { margin: 0; min-height: 100%; }
+      body {
+        font-family: var(--k-font-family-sans);
+        color: var(--k-color-fg-primary);
+        background: var(--k-color-bg-canvas);
+      }
+      .stage {
+        display: grid;
+        grid-template-columns: var(--k-layout-sidebar-width) minmax(0, 1fr) var(--k-layout-inspector-width);
+        grid-template-rows: var(--k-layout-toolbar-height) minmax(280px, 1fr);
+        min-height: 100vh;
+      }
+      .toolbar { grid-column: 1 / -1; display: flex; align-items: center; gap: 12px; padding: 0 16px; }
+      .side, .inspector { padding: 12px; }
+      .canvas {
+        background: var(--k-color-bg-canvas);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+      .frame {
+        width: 280px;
+        height: 160px;
+        background: var(--k-color-bg-surface);
+        border-radius: var(--k-radius-md);
+        box-shadow: var(--k-shadow-md);
+      }
+      .menu {
+        position: absolute;
+        top: 24px;
+        right: 24px;
+        width: 180px;
+        padding: 8px;
+        border-radius: var(--k-radius-lg);
+      }
+      .tip {
+        position: absolute;
+        left: 24px;
+        bottom: 24px;
+        padding: 6px 8px;
+        border-radius: var(--k-radius-md);
+        font-size: 11px;
+      }
+      input {
+        width: 100%;
+        box-sizing: border-box;
+        height: 28px;
+        padding: 0 8px;
+        background: var(--k-color-bg-control);
+        border: 1px solid var(--k-color-control-border);
+        border-radius: var(--k-radius-md);
+        color: var(--k-color-fg-primary);
+      }
+      h1, p { margin: 0 0 8px; font-size: 13px; font-weight: 500; }
+      .muted { color: var(--k-color-fg-secondary); font-size: 12px; }
+    </style>
+  </head>
+  <body>
+    <div class="stage">
+      <header class="toolbar" data-k-material="regular">
+        <strong>Keijam</strong>
+        <span class="muted">fake glass · canvas solid</span>
+      </header>
+      <aside class="side" data-k-material="regular">
+        <h1>Layers</h1>
+        <p class="muted">Regular material</p>
+        <input aria-label="Layer name" value="Hero" />
+      </aside>
+      <main class="canvas">
+        <div class="frame" aria-label="Canvas frame"></div>
+        <div class="menu" data-k-material="thick"><p>Insert</p><p class="muted">Thick menu</p></div>
+        <div class="tip" data-k-material="thin">Thin tooltip</div>
+      </main>
+      <aside class="inspector" data-k-material="regular">
+        <h1>Design</h1>
+        <p class="muted">No backdrop blur</p>
+      </aside>
+    </div>
+  </body>
+</html>

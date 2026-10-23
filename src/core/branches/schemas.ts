@@ -21,7 +21,6 @@ export type SiteBranch = Static<typeof SiteBranchSchema>
 export const BranchListEnvelopeSchema = Type.Object({
   branches: Type.Array(SiteBranchSchema),
 })
-export type BranchListEnvelope = Static<typeof BranchListEnvelopeSchema>
 
 export const BranchEnvelopeSchema = Type.Object({
   branch: SiteBranchSchema,
@@ -286,12 +285,10 @@ export const REVIEW_VIEWPORT = { width: 1280, height: 800 } as const
 export const CreateMergeRequestBodySchema = Type.Object({
   note: Type.String({ maxLength: REVIEW_NOTE_MAX_LENGTH }),
 }, { additionalProperties: false })
-export type CreateMergeRequestBody = Static<typeof CreateMergeRequestBodySchema>
 
 export const DeclineMergeRequestBodySchema = Type.Object({
   note: Type.String({ minLength: 1, maxLength: REVIEW_NOTE_MAX_LENGTH }),
 }, { additionalProperties: false })
-export type DeclineMergeRequestBody = Static<typeof DeclineMergeRequestBodySchema>
 
 export const CreateReviewCommentBodySchema = Type.Object({
   entityKey: Type.String({ maxLength: 400 }),

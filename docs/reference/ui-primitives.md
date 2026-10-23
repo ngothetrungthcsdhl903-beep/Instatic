@@ -210,7 +210,7 @@ import { Button } from '@ui/components/Button'
 
 ## `Input` and `Textarea`
 
-Bordered transparent inputs with a pill radius (`--input-radius`). Focus adds an inset achromatic glow (`--shadow-input-focus`).
+Control fill `--k-color-bg-control`, rest border `1px solid var(--k-color-control-border)`, pill radius (`--input-radius`). Hover uses `--k-color-border-strong`. Focus uses a 1px `--k-color-accent` border and the `--k-color-focus-ring` outline.
 
 ```tsx
 import { Input, Textarea } from '@ui/components/Input'

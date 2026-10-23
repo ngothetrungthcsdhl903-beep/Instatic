@@ -47,8 +47,3 @@ export function readPreviewAsset(publicPath: string): PreviewAsset | null {
   const buildId = publicPath.slice(BRANCH_PREVIEW_ASSET_PREFIX.length).split('/')[0]
   return builds.get(buildId ?? '')?.get(publicPath) ?? null
 }
-
-/** Test seam. */
-export function resetPreviewBuilds(): void {
-  builds.clear()
-}

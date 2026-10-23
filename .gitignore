@@ -22,6 +22,9 @@ coverage/
 .matrix/
 *.local
 
+# MCP memory server graph (local). See .cursor/mcp.json.
+docs/memory/knowledge-graph.jsonl
+
 # Local SQLite dev databases — runtime state, never source
 data/*.db
 data/*.db-shm

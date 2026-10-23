@@ -3,8 +3,8 @@
 .input {
     width: 100%;
     box-sizing: border-box;
-    background: transparent;
-    border: 1px solid var(--overlay-20);
+    background: var(--k-color-bg-control);
+    border: 1px solid var(--k-color-control-border);
     border-radius: var(--input-radius);
     color: var(--text);
     font-family: var(--font-sans);
@@ -13,13 +13,15 @@
 }
 
 .input:hover {
-    border-color: var(--overlay-30);
+    border-color: var(--k-color-border-strong);
 }
 
 .input:focus,
 .input:focus-within {
-    background: transparent;
-    border-color: var(--overlay-50);
+    background: var(--k-color-bg-control);
+    border-color: var(--k-color-accent);
+    outline: 2px solid var(--k-color-focus-ring);
+    outline-offset: 1px;
 }
 
 .input:disabled {
@@ -87,8 +89,8 @@
     align-items: stretch;
     width: 100%;
     box-sizing: border-box;
-    background: transparent;
-    border: 1px solid var(--overlay-20);
+    background: var(--k-color-bg-control);
+    border: 1px solid var(--k-color-control-border);
     border-radius: var(--input-radius);
     color: var(--text);
     font-family: var(--font-sans);
@@ -102,12 +104,14 @@
 }
 
 .inputWrapper:hover {
-    border-color: var(--overlay-30);
+    border-color: var(--k-color-border-strong);
 }
 
 .inputWrapper:focus-within {
-    background: transparent;
-    border-color: var(--overlay-50);
+    background: var(--k-color-bg-control);
+    border-color: var(--k-color-accent);
+    outline: 2px solid var(--k-color-focus-ring);
+    outline-offset: 1px;
 }
 
 .inputWrapper[data-disabled="true"] {

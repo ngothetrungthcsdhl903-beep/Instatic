@@ -100,8 +100,6 @@ export const MediaAssetExportSchema = Type.Intersect([
   }),
 ])
 
-export type MediaAssetExport = Static<typeof MediaAssetExportSchema>
-
 // ---------------------------------------------------------------------------
 // BundleMediaFolder
 // ---------------------------------------------------------------------------
@@ -120,8 +118,6 @@ export const BundleMediaFolderSchema = Type.Object({
   sortOrder: Type.Number(),
 })
 
-export type BundleMediaFolder = Static<typeof BundleMediaFolderSchema>
-
 // ---------------------------------------------------------------------------
 // BundleRedirect
 // ---------------------------------------------------------------------------
@@ -139,8 +135,6 @@ export const BundleRedirectSchema = Type.Object({
   fromSlug: Type.String(),
   targetRowId: Type.String(),
 })
-
-export type BundleRedirect = Static<typeof BundleRedirectSchema>
 
 // ---------------------------------------------------------------------------
 // ImportStrategy
@@ -183,8 +177,6 @@ export const RowSlugOverrideSchema = Type.Object({
   rowId: Type.String(),
   slug: Type.String(),
 })
-
-export type RowSlugOverride = Static<typeof RowSlugOverrideSchema>
 
 /**
  * Request body accepted by `POST /admin/api/cms/export` (and query string

@@ -280,6 +280,7 @@ export function ContextMenu({
       role="menu"
       aria-label={ariaLabel}
       className={cn(styles.menu, menuClassName)}
+      data-k-material="thick"
       data-side={resolvedSide}
       // Entrance keyframes run once the menu is measured and visible;
       // `data-closing` swaps in the exit keyframes during the deferred close.

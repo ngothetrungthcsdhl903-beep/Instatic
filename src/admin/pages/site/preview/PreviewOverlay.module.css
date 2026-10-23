@@ -5,7 +5,6 @@
     inset: 0;
     background: var(--scrim-90);
     z-index: 400;
-    backdrop-filter: blur(3px);
 }
 
 .dialogWrapper {
@@ -22,7 +21,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    background: var(--bg-surface-2);
+    background: transparent;
     border: 1px solid var(--border);
     border-radius: 12px;
     overflow: hidden;

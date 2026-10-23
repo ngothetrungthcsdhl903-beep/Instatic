@@ -1,6 +1,13 @@
 # Instatic
 
-This file is the **agent rule book**. Read it before changing code. Detailed explanations live in `docs/` — start at [`docs/README.md`](docs/README.md) for orientation and follow the links from there.
+Keijam is the product on this fork: a visual web design tool in the Framer/Figma vein, built on the Instatic engine (MIT). This file is the **agent rule book**. Read it before changing code. Detailed explanations live in `docs/` — start at [`docs/README.md`](docs/README.md) for orientation and follow the links from there. At the start of a task, also read `docs/memory/{projectbrief,techContext,activeContext,progress,decisions}.md`. After a non-trivial change, update `activeContext.md`, `progress.md`, and `decisions.md`.
+
+## Keijam agent kit
+
+- **Design.** Figma UI3 is the reference for density, type scale, and neutral grays. Do not copy Figma logos, icons, or brand assets. One blue accent, token `--k-color-accent` (the kit name `--k-accent` means this token). No hardcoded accent hex in components. Icons are monochrome Lucide outlines (16px, stroke 1.5, `currentColor`; accent only when active or selected). No multicolor, filled-color, or emoji icons. Chrome is fake glass from `design-system/` — no `backdrop-filter`. Spec: [`design-system/DESIGN_SYSTEM.md`](design-system/DESIGN_SYSTEM.md). Decisions: [`docs/memory/decisions.md`](docs/memory/decisions.md).
+- **License.** Keep the Instatic MIT notice in `LICENSE`. Revyme and Webstudio are AGPL: ideas only, never copy code. New dependencies must be MIT, ISC, BSD, or Apache-2.0.
+- **Canvas.** Document state lives in the editor store. Pointer moves go through refs and `requestAnimationFrame`; commit on pointerup. Do not `setState` on every mousemove.
+- **Perf.** The Site editor body (`dist/assets/AdminCanvasEditorBody-*.js`) stays ≤ 300 KB gzip (`bun run size`). `bun run lint:unused` (knip) stays clean of dead code. `ANALYZE=1 bun run analyze` writes `dist/stats.html`. `react-scan` loads only when `import.meta.env.DEV` is true.
 
 ## Local admin smoke tests
 
@@ -137,10 +144,13 @@ If you are unsure whether a refactor is in scope, default to *yes, do it*, and e
 
 ## Design and styling rules
 
-Detailed system: [`docs/design.md`](docs/design.md). The rules:
+Keijam chrome tokens are generated. **Source of truth:** [`design-system/gen.py`](design-system/gen.py) → `tokens.css` / `tokens.json` (`--k-*`). Do not hand-edit the generated files. Spec: [`design-system/DESIGN_SYSTEM.md`](design-system/DESIGN_SYSTEM.md). Decisions: [`docs/memory/decisions.md`](docs/memory/decisions.md). `src/styles/globals.css` imports `tokens.css`; classic admin tokens that have not moved onto `--k-*` still live in that file. Agent rule: [`.cursor/rules/30-design-system.mdc`](.cursor/rules/30-design-system.mdc).
 
-- **No hardcoded hex / rgb / hsl in admin / ui CSS modules.** Every color comes from a `var(--*)` token in `src/styles/globals.css`. If a needed token doesn't exist, add it. Gated by `css-token-policy.test.ts`.
-- **No `var(--name, fallback)` in admin / ui CSS modules.** Use bare `var(--name)`. If the token doesn't exist, define it in `globals.css`. Fallbacks hide missing tokens. For JS-driven custom properties, set defaults in a CSS rule instead of in every `var()`. Gated by `no-css-var-fallbacks.test.ts`.
+- **Fake glass on all chrome, solid canvas.** Panels, toolbars, sidebars, menus, popovers, dialogs, toasts, and tooltips use `data-k-material="thin|regular|thick"` (`src/styles/materials.css`): semi-opaque fill, sheen, inner top highlight, shadow, feather mask, tiled `/brand/noise.png`. **No `backdrop-filter`.** `--k-material-*-blur` is `0px` so dragging stays on the compositor. `prefers-reduced-transparency` falls back to `--k-material-solid-fallback`. The canvas does not get the material. Gated by `no-backdrop-filter.test.ts`.
+- **One accent:** `--k-color-accent` and its generated hover, pressed, subtle, text, and on-accent tokens. Do not reintroduce `--kj-accent`.
+- **Inputs at rest** use `border: 1px solid var(--k-color-control-border)` (WCAG 1.4.11 at 3:1).
+- **No hardcoded hex / rgb / hsl in admin / ui CSS modules.** Every color comes from a `var(--*)` token (`--k-*` for Keijam chrome, or a token in `src/styles/globals.css` for classic admin surfaces). Gated by `css-token-policy.test.ts`.
+- **No `var(--name, fallback)` in admin / ui CSS modules.** Use bare `var(--name)`. If the token doesn't exist, add it in `design-system/gen.py` (Keijam) or `globals.css` (classic admin) and regenerate when the generator owns it. Fallbacks hide missing tokens. For JS-driven custom properties, set defaults in a CSS rule instead of in every `var()`. Gated by `no-css-var-fallbacks.test.ts`.
 - **Two-layer color model.** Surfaces, borders, and default text are achromatic. Color is used as **identity** (rail tints `--rail-tint-mint/lilac/sky/peach` for categorical identity), as **state** (`--editor-danger`, `--editor-warning`, `--editor-success-*`, `--editor-info-*`), or as **canvas affordance** (`--canvas-selection-ring`, `--canvas-hover-ring`). Never decorative.
 - **Card surface pattern.** Tile cards (dashboard widgets and equivalents) are borderless: `--editor-surface-2` on a darker `--editor-surface` parent with a 1px grid gap, 16px radius. Hover lifts the surface tone — never recolor a border. Canonical implementation: `src/ui/components/Widget/Widget.module.css`.
 - **Border radius scale.** `--editor-radius-sm` (3px) for tight chips. `--editor-radius` (6px) for default editor controls and buttons. `--panel-radius` (12px) for floating overlay panels. 16px for tile cards. `--input-radius` (1em) for pill-shaped inputs. Don't introduce ad-hoc radius values.
@@ -285,7 +295,7 @@ Note: `@core/framework-schema` is a dependency of both `@core/page-tree` (for `F
 - **Clear logic over clever logic.** Straight-line code beats a generic abstraction with two callers.
 - **Names must be honest.** A function called `renderPage` renders a page.
 - **One reason per module.** Files in `server/{repositories,handlers/cms,auth,plugins,publish}/*` and `src/core/*` are organized by responsibility — keep them that way.
-- **No dead code.** Unused exports, parameters, types, files: delete them. `fallow` (`npx fallow dead-code`) is the canonical tool; `knip`, `madge`, and `jscpd` remain available for second-opinion checks.
+- **No dead code.** Unused exports, parameters, types, files: delete them. `bun run lint:unused` (knip) is the unused-code check; `fallow` (`npx fallow dead-code`) is the coverage health check. `madge` and `jscpd` remain available for second-opinion checks.
 - **Health checks with coverage.** `bun run fallow:health` runs `bun test --coverage` and feeds the result to `fallow health --coverage`. Run before deciding whether a hotspot needs more tests vs. more refactoring.
 - **No `any` to escape a type problem.** Fix the type.
 - **No commented-out code.** Git remembers.

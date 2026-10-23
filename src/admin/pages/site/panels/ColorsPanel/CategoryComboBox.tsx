@@ -132,6 +132,7 @@ export function CategoryComboBox({
             role="listbox"
             aria-label={`${label} suggestions`}
             className={styles.categoryMenu}
+            data-k-material="thick"
           >
             {filteredSuggestions.map((suggestion, index) => (
               <button

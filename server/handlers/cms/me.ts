@@ -187,7 +187,7 @@ export async function handleMeRoutes(
     return jsonResponse({
       secret,
       otpauthUrl: totpProvisioningUri({
-        issuer: 'Instatic',
+        issuer: 'Keijam',
         accountName: user.email,
         secret,
       }),

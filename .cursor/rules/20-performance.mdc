@@ -1,0 +1,11 @@
+---
+description: Bundle size and runtime performance
+globs: "**/*.{ts,tsx,js}"
+---
+- Import heavy third-party modules by their specific entry. Lucide icons are named imports from `lucide-react`, not a barrel of the whole pack.
+- Lazy-load panels, dialogs, and code editors with `React.lazy` and dynamic `import()`.
+- Do not add a dependency when under 50 lines of local code would do.
+- Start independent fetches together (`Promise.all`). Do not waterfall them.
+- The React Compiler memoizes components. Do not add manual memoization except the three exceptions in AGENTS.md. Use react-scan in dev to see render waste. react-scan must not ship in production.
+- Virtualize long lists (layers, assets).
+- Before a PR: `bun run lint:unused` clean, and `bun run size` within the 300 KB gzip editor budget. `bun run analyze` writes the treemap when you need a map.

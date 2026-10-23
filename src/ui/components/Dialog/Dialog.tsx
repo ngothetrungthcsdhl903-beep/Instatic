@@ -204,6 +204,7 @@ export function Dialog({
         data-size={size}
         data-tone={tone}
         className={cn(styles.dialog, className)}
+        data-k-material="thick"
         onClick={(event) => event.stopPropagation()}
       >
         <header className={styles.header}>
