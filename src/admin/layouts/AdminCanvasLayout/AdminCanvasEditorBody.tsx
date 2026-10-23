@@ -5,8 +5,9 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core'
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { CanvasRoot } from '@admin/pages/site/canvas'
+import { KeijamEditor } from '@admin/pages/site/keijam/KeijamEditor'
 import { CodeEditorPanel, CodeEditorSkeleton } from '@admin/pages/site/code-editor'
 import { useActiveLivePath } from '@admin/pages/site/hooks/useActiveLivePath'
 import { useAutoResolveDependencies } from '@admin/pages/site/hooks/useAutoResolveDependencies'
@@ -63,6 +64,22 @@ export function AdminCanvasEditorBody({
   const importHtmlModalOpen = useEditorStore((s) => s.importHtmlModalOpen)
   const hasRightSidebar = rightSidebarExpanded
   const narrowChrome = useNarrowEditorChrome()
+  const [chrome, setChrome] = useState<'keijam' | 'classic'>(() => {
+    try {
+      return localStorage.getItem('keijam.chrome') === 'classic' ? 'classic' : 'keijam'
+    } catch {
+      return 'keijam'
+    }
+  })
+
+  function setEditorChrome(next: 'keijam' | 'classic') {
+    setChrome(next)
+    try {
+      localStorage.setItem('keijam.chrome', next)
+    } catch {
+      // Private mode can reject storage. The choice still applies this session.
+    }
+  }
 
   // Site Explorer organization hooks into this outer DndContext. DomPanel has
   // its own nested DndContext for DOM tree reordering, isolated by dnd-kit.
@@ -89,6 +106,14 @@ export function AdminCanvasEditorBody({
       */}
       <DndContext sensors={canvasDndSensors} collisionDetection={pointerWithin}>
         <div className={styles.editorBody}>
+          {chrome === 'keijam' ? (
+            <KeijamEditor
+              editable={canEditDraftSite}
+              loadError={loadError}
+              onUseClassic={() => setEditorChrome('classic')}
+            />
+          ) : (
+          <>
           <LeftSidebar
             workspace="site"
             editable={canEditDraftSite}
@@ -99,6 +124,14 @@ export function AdminCanvasEditorBody({
             className={cn(styles.canvasStage, hasRightSidebar && styles.canvasStageRightSidebarOpen)}
             data-right-sidebar-expanded={hasRightSidebar ? 'true' : 'false'}
           >
+            <Button
+              variant="secondary"
+              size="xs"
+              className={styles.designModeButton}
+              onClick={() => setEditorChrome('keijam')}
+            >
+              Keijam
+            </Button>
             <div className={styles.canvasContent} key="site">
               {/* Canvas — fills the remaining space between sidebars */}
               {loadError ? (
@@ -119,6 +152,8 @@ export function AdminCanvasEditorBody({
             key="site"
             mode={canSaveSite ? 'site' : 'hidden'}
           />
+          </>
+          )}
         </div>
       </DndContext>
 
@@ -153,7 +188,7 @@ function ImportHtmlModalLoading() {
       open={true}
       onClose={closeModal}
       title="Import HTML"
-      eyebrow="Instatic"
+      eyebrow="Keijam"
       size="lg"
       className={styles.importHtmlLoadingDialog}
       bodyClassName={styles.importHtmlLoadingBody}

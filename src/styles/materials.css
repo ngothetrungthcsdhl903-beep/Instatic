@@ -1,0 +1,69 @@
+/*
+ * Fake glass for Keijam chrome. The fill, sheen, noise, feather mask,
+ * highlight, and shadow all come from design-system tokens. There is no
+ * backdrop-filter: the blur token is 0px so dragging stays on the compositor.
+ * The canvas never gets this attribute.
+ *
+ * `data-k-material` is thin | regular (default) | thick.
+ * `data-k-material-flat` skips the feather mask for scrollports, where a
+ * mask would clip or scroll away from the visible edges.
+ */
+
+[data-k-material] {
+    --k-material-bg: var(--k-material-regular-bg);
+    --k-material-highlight: var(--k-material-regular-highlight);
+    --k-material-shadow: var(--k-material-regular-shadow);
+    --k-material-sheen: var(--k-material-regular-sheen);
+    --k-material-noise: var(--k-material-regular-noise);
+    --k-material-feather-y: var(--k-material-regular-feather-y);
+    --k-material-feather-x: var(--k-material-regular-feather-x);
+    position: relative;
+    isolation: isolate;
+    background-color: transparent;
+    background-image: none;
+    box-shadow:
+        inset 0 1px 0 var(--k-material-highlight),
+        var(--k-material-shadow);
+}
+
+[data-k-material="thin"] {
+    --k-material-bg: var(--k-material-thin-bg);
+    --k-material-highlight: var(--k-material-thin-highlight);
+    --k-material-shadow: var(--k-material-thin-shadow);
+    --k-material-sheen: var(--k-material-thin-sheen);
+    --k-material-noise: var(--k-material-thin-noise);
+    --k-material-feather-y: var(--k-material-thin-feather-y);
+    --k-material-feather-x: var(--k-material-thin-feather-x);
+}
+
+[data-k-material="thick"] {
+    --k-material-bg: var(--k-material-thick-bg);
+    --k-material-highlight: var(--k-material-thick-highlight);
+    --k-material-shadow: var(--k-material-thick-shadow);
+    --k-material-sheen: var(--k-material-thick-sheen);
+    --k-material-noise: var(--k-material-thick-noise);
+    --k-material-feather-y: var(--k-material-thick-feather-y);
+    --k-material-feather-x: var(--k-material-thick-feather-x);
+}
+
+[data-k-material]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    border-radius: inherit;
+    background-color: var(--k-material-bg);
+    background-image: var(--k-material-noise), var(--k-material-sheen);
+    background-repeat: repeat, no-repeat;
+    background-size: 64px 64px, auto;
+    -webkit-mask-image: var(--k-material-feather-y), var(--k-material-feather-x);
+    mask-image: var(--k-material-feather-y), var(--k-material-feather-x);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+}
+
+[data-k-material-flat]::before {
+    -webkit-mask-image: none;
+    mask-image: none;
+}

@@ -518,7 +518,7 @@ export function SiteImportModal({ onCmsBundleImportComplete }: SiteImportModalPr
       open={true}
       onClose={handleClose}
       title={titleByStep[step]}
-      eyebrow="Instatic"
+      eyebrow="Keijam"
       size={step === 'analyze' ? '2xl' : 'xl'}
       tone={isCmsReplace ? 'danger' : 'neutral'}
       footer={step === 'drop' ? undefined : (

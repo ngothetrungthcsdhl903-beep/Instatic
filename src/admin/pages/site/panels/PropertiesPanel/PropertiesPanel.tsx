@@ -161,6 +161,7 @@ export function PropertiesPanel({ variant = 'floating' }: PropertiesPanelProps) 
           : undefined
       }
       className={cn(styles.panel, variant === 'docked' && styles.panelDocked)}
+      data-k-material={variant === 'docked' ? undefined : 'regular'}
     >
       {/* ─── Screen-reader live region (Guideline #331) ─────────────────── */}
       <div role="status" aria-live="polite" className={styles.srLiveRegion}>

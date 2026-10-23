@@ -51,6 +51,7 @@ export function RightSidebar({ mode }: RightSidebarProps) {
     <aside
       ref={sidebarRef}
       className={styles.sidebar}
+      data-k-material="regular"
       data-testid="right-sidebar"
       data-expanded={isExpanded ? 'true' : 'false'}
       data-mode={propertiesPanelMode}

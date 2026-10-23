@@ -1,8 +1,10 @@
 # Design
 
-The visual design system for Instatic — principles, tokens, surfaces, components.
+The visual design system for Keijam — principles, tokens, surfaces, components.
 
-The design is a **two-layer color model**: an achromatic base (surfaces, borders, default text) with a deliberate semantic and categorical color layer on top (numbered accents for identity, state tokens for meaning, canvas neon for selection). Everything is tokenized in `src/styles/globals.css`. Every primitive lives in `src/ui/components/`.
+Keijam chrome — color, type, layout, and materials — comes from [`design-system/`](../design-system/DESIGN_SYSTEM.md). `gen.py` emits `tokens.css` (`--k-*`); `globals.css` imports it. The accent is `--k-color-accent` (light `#0A66E0`, dark `#1F6FEB`). Fake glass (`data-k-material`, `src/styles/materials.css`) covers panels, toolbars, menus, and popovers. There is no `backdrop-filter`. The canvas stays `--k-color-bg-canvas`. Decisions: [`memory/decisions.md`](memory/decisions.md). Contrast: `python3 check.py` in `design-system/`, also `src/__tests__/keijam/accentContrast.test.ts`.
+
+Classic admin surfaces that have not moved onto `--k-*` still use the achromatic tokens in `src/styles/globals.css`. That file is a **two-layer color model**: an achromatic base (surfaces, borders, default text) with a semantic and categorical color layer (numbered accents for identity, state tokens for meaning, canvas neon for selection). Every primitive lives in `src/ui/components/`.
 
 ---
 
@@ -10,14 +12,14 @@ The design is a **two-layer color model**: an achromatic base (surfaces, borders
 
 - **Base is achromatic; color is the layer on top.** Surfaces, borders, and default text are neutral. Color is used to convey **identity** (`--accent-1..10`) and **state** (danger, warning, success, info, canvas selection / hover). Color is never decorative — every colored pixel carries meaning.
 - **Borderless tile cards.** Dashboard widgets and equivalent surfaces sit on a darker parent (`--bg-surface`) with a 1px grid gap, no border, `--card-radius` (16px). The gap reveals the parent and reads as a divider. Hover lifts the surface tone, never the border. Canonical implementation: `src/ui/components/Widget/Widget.module.css`.
-- **Bordered transparent inputs.** Inputs have a 1px white-alpha border, transparent background, and a pill 1em radius. Focus adds an inset achromatic glow.
-- **Floating overlay panels.** Spotlight, popovers, and modals use direct globals: `--bg-surface`, `--overlay-10`, `--panel-radius`, `--panel-blur`, and `--shadow-panel`.
+- **Inputs.** Rest fill is `--k-color-bg-control` with a 1px `--k-color-control-border` (3:1 on the panel). Hover uses `--k-color-border-strong`. Focus uses a 1px `--k-color-accent` border plus the focus ring. Radius stays `--input-radius`.
+- **Chrome is fake glass.** Toolbars, panels, menus, popovers, dialogs, toasts, and tooltips use `data-k-material` and the `--k-material-*` tokens. `--panel-blur` is `0px`. Do not add `backdrop-filter`.
 - **Editor controls** (toolbar buttons, chips) use `--radius` (6px) for default and `--radius-sm` (3px) for tight badges.
 - **Admin appearance is token-scoped.** Settings → Preferences stores `theme`, `density`, and `textScale` in `instatic-editor-prefs`; `useEditorAppearancePreferences()` mirrors them to `data-editor-theme`, `data-editor-density`, and `data-editor-text-scale` on the document and layout roots. Light mode and text scaling are token overrides, not per-component restyles.
-- **One source of truth: `src/styles/globals.css`.** No hardcoded hex / rgb / hsl in admin / ui CSS modules — gated by `css-token-policy.test.ts`. Admin font sizes use the fluid `--text-*` scale, and admin spacing uses the fluid `--space-*` scale — gated by `admin-typography-token-policy.test.ts` and `admin-spacing-token-policy.test.ts`.
+- **Keijam tokens:** `design-system/gen.py`. **Classic admin tokens:** `src/styles/globals.css`. No hardcoded hex / rgb / hsl in admin / ui CSS modules — gated by `css-token-policy.test.ts`. Admin font sizes use the fluid `--text-*` scale, and admin spacing uses the fluid `--space-*` scale — gated by `admin-typography-token-policy.test.ts` and `admin-spacing-token-policy.test.ts`.
 - **CSS Modules only.** No Tailwind utility classes — gated by `noTailwindUtilities.test.ts`. No Tailwind ecosystem deps — gated by `no-tailwind-deps.test.ts`.
 - **Every interactive control goes through a UI primitive** from `src/ui/components/`. Bare `<button>` is gated.
-- **Icons come from `pixel-art-icons`.** Deep-imported for tree-shaking. No `lucide-react`, no inline SVG strings.
+- **Icons.** Classic admin uses `pixel-art-icons`, deep-imported. The Keijam editor uses Lucide (`currentColor`). Do not inline either set as SVG strings, and do not copy another product's icons.
 
 ---
 
@@ -79,9 +81,7 @@ This is implemented by `Widget` (`src/ui/components/Widget/`) and `DashboardGrid
 
 ### 5. Inputs wear their borders. Cards don't.
 
-Inputs are the inverse of cards: transparent background with a 1px white-alpha border. Pill radius (1em ≈ 16px). On focus, an inset achromatic glow appears. The border is what defines the input; no fill.
-
-This split (cards = filled & borderless, inputs = unfilled & bordered) is the load-bearing visual distinction between containers and controls.
+Inputs sit on `--k-color-bg-control` with a 1px `--k-color-control-border` at rest, so the control edge clears WCAG 1.4.11 at 3:1. Hover moves the border to `--k-color-border-strong`. Focus uses a 1px `--k-color-accent` border and `outline: 2px solid var(--k-color-focus-ring)`. Radius stays `--input-radius`. Cards stay filled and borderless; the border is what separates a control from a card.
 
 ### 6. Identity is a color, not a label
 
@@ -324,36 +324,28 @@ This is what reads as the Instatic dashboard aesthetic. Same pattern is used by 
 
 ### 2. Floating Overlay Panels
 
-Spotlight, popovers, modals, and command palettes. These sit above the editor with a blur backdrop:
-
-```css
-.panel {
-  background: var(--bg-surface);              /* rgb(30 30 30) */
-  border: 1px solid var(--overlay-10);    /* rgba(255,255,255,0.10) */
-  border-radius: var(--panel-radius);       /* 12px */
-  backdrop-filter: blur(var(--panel-blur)); /* 24px */
-  box-shadow: var(--shadow-panel);          /* composite */
-}
-```
-
-Floating panels are the only surface that uses a visible border + blur — they're explicitly stacked above the editor, so they advertise themselves with the border and the slight transparency that the blur reveals.
+Spotlight, popovers, modals, and command palettes take `data-k-material="thick"` (tooltips and the zoom pill use `thin`, toolbars and sidebars use `regular`). `src/styles/materials.css` paints the semi-opaque fill, sheen, noise, feather, highlight, and shadow from `--k-material-*`. The element background stays transparent so the feathered `::before` shows through. Scrims behind a modal stay a flat color. `--panel-blur` is `0px`; chrome does not use `backdrop-filter`. Under `prefers-reduced-transparency` the material resolves to `--k-material-solid-fallback`.
 
 ### 3. Inputs
 
-Bordered, transparent, pill-shaped:
+Filled control, visible rest border, pill radius:
 
 ```css
 .input {
-  background: transparent;              /* transparent */
-  border: 1px solid var(--overlay-20);    /* rgba(255,255,255,0.20) */
-  border-radius: var(--input-radius);       /* 1em */
-  color: var(--text);
+  background: var(--k-color-bg-control);
+  border: 1px solid var(--k-color-control-border);
+  border-radius: var(--input-radius);
+  color: var(--k-color-fg-primary);
 }
-.input:hover  { border-color: var(--overlay-30); }
-.input:focus  { border-color: var(--overlay-50); box-shadow: var(--shadow-input-focus); }
+.input:hover { border-color: var(--k-color-border-strong); }
+.input:focus {
+  border-color: var(--k-color-accent);
+  outline: 2px solid var(--k-color-focus-ring);
+  outline-offset: 1px;
+}
 ```
 
-The border is the input's identity. Don't fill them. Don't square the corners.
+The rest border is the input's identity. It is a real neutral (`--k-color-control-border`), not a 0-alpha hairline. Don't stack a second glass layer on a control that already sits on a glass panel.
 
 ### 4. Panel rail (the colored sidebar)
 

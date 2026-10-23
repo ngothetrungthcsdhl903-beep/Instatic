@@ -228,6 +228,7 @@ function TooltipInner({
               size === 'wide' && styles.bubbleWide,
               position !== null && styles.visible,
             )}
+            data-k-material="thin"
             data-side={position?.side ?? 'top'}
             style={bubbleStyle}
           >

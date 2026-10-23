@@ -1,12 +1,12 @@
 {
-  "name": "instatic",
+  "name": "keijam",
   "private": true,
   "version": "0.0.21",
   "engines": {
     "bun": ">=1.4.0 <1.5.0"
   },
   "packageManager": "bun@1.4.2",
-  "description": "Self-hosted CMS with an integrated visual editor.",
+  "description": "Keijam is a self-hosted visual web design tool with plain HTML and CSS output.",
   "author": "David Babinec",
   "license": "MIT",
   "homepage": "https://instatic.com",

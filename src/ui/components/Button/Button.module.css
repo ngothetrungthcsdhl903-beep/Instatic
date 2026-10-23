@@ -203,6 +203,23 @@
     background: var(--btn-primary-bg-active);
 }
 
+/* Keijam primary actions opt in with accentFill. The default primary pill
+   stays the achromatic inverse so the rest of the admin chrome is unchanged. */
+.variant-primary.accentFill {
+    background: var(--k-color-accent);
+    color: var(--k-color-fg-on-accent);
+}
+
+.variant-primary.accentFill:hover {
+    background: var(--k-color-accent-hover);
+    color: var(--k-color-fg-on-accent);
+}
+
+.variant-primary.accentFill:active {
+    background: var(--k-color-accent-pressed);
+    color: var(--k-color-fg-on-accent);
+}
+
 /* ── Variant: secondary ───────────────────────────────────────────────────── */
 .variant-secondary {
     background: var(--overlay-10);

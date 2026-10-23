@@ -31,11 +31,10 @@
     align-items: flex-start;
     gap: var(--space-m);
     padding: var(--space-m) var(--space-l);
-    background: var(--bg-surface);
+    background: transparent;
     border: 1px solid var(--overlay-10);
     border-radius: var(--panel-radius);
     box-shadow: var(--shadow-panel);
-    backdrop-filter: blur(var(--panel-blur));
     color: var(--text);
     font-size: var(--text-s);
     line-height: 1.4;

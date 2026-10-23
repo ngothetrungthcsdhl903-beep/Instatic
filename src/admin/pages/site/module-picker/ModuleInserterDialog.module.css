@@ -14,13 +14,11 @@
     place-items: center;
     padding: var(--space-7xl);
     background: var(--scrim-50);
-    backdrop-filter: blur(var(--backdrop-blur));
 }
 
 .backdrop[data-dragging="true"] {
     pointer-events: none;
     background: transparent;
-    backdrop-filter: none;
 }
 
 .backdrop [data-accent="mint"] {
@@ -53,7 +51,11 @@
     overflow: hidden;
     border: 1px solid var(--overlay-10);
     border-radius: var(--panel-radius);
-    background: var(--bg-surface);
+    background-color: var(--k-material-thick-bg);
+    background-image: var(--k-material-thick-noise), var(--k-material-thick-sheen);
+    background-repeat: repeat, no-repeat;
+    background-size: 64px 64px, auto;
+    box-shadow: inset 0 1px 0 var(--k-material-thick-highlight), var(--k-material-thick-shadow);
     transition:
         opacity 120ms ease,
         transform 120ms ease;

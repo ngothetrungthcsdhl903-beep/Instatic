@@ -65,6 +65,7 @@ export function FloatingWindow({
     <aside
       ref={setPanelRef}
       className={cn(styles.window, className)}
+      data-k-material="regular"
       role="dialog"
       aria-label={ariaLabel ?? title}
       data-testid={testId ?? `floating-window-${panelId}`}

@@ -36,7 +36,7 @@ export function unsupportedBunWarning(version: string): string | null {
   if (semverSatisfies(version, SUPPORTED_BUN_RANGE, { includePrerelease: true })) return null
   return (
     `[server] Bun ${version} is outside the supported range ${SUPPORTED_BUN_RANGE}. ` +
-    'Instatic starts anyway, but releases are built and tested inside that range; ' +
+    'Keijam starts anyway, but releases are built and tested inside that range; ' +
     'run `bun upgrade` to move to a supported Bun.'
   )
 }

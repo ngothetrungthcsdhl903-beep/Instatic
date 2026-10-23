@@ -1,10 +1,10 @@
 <div align="center">
 
-# Instatic
+# Keijam
 
-**Own your site. Love building it.**
+**Design the page. Publish the HTML.**
 
-A self-hosted CMS where the visual editor, content engine, and publisher all live in one Bun server — and the pages it ships are clean enough to read in view-source.
+Keijam is a self-hosted visual web design tool. The canvas is direct manipulation — frames, stacks, and breakpoint overrides — and the pages it ships are plain HTML and CSS, clean enough to read in view-source. One Bun server holds the editor, content, and publisher.
 
 <p>
   <a href="https://trendshift.io/repositories/66792?utm_source=repository-badge&utm_medium=badge&utm_campaign=badge-repository-66792" target="_blank" rel="noopener noreferrer">
@@ -26,13 +26,13 @@ A self-hosted CMS where the visual editor, content engine, and publisher all liv
   <img src="https://img.youtube.com/vi/zyjCF_TaLlg/maxresdefault.jpg" alt="Watch the Instatic interface demo on YouTube" width="100%">
 </a>
 
-*Watch the introductory video about Instatic on YouTube.*
+*Watch the introductory video about the editor on YouTube.*
 
 </div>
 
 <br>
 
-A modern website usually means assembling a stack: a headless CMS, a framework, a host, a form service, an analytics vendor, an image CDN — each with its own bill, dashboard, and 2 a.m. outage. Instatic is the opposite bet. One Bun server holds the whole thing — the canvas editor, the content engine, media, auth, forms, plugins, and the publisher — and you run it wherever you like, backed by SQLite or Postgres.
+A modern website usually means assembling a stack: a headless CMS, a framework, a host, a form service, an analytics vendor, an image CDN — each with its own bill, dashboard, and 2 a.m. outage. Keijam is the opposite bet. One Bun server holds the whole thing — the design canvas, the content engine, media, auth, forms, plugins, and the publisher — and you run it wherever you like, backed by SQLite or Postgres. Keijam is built on the Instatic engine and stays self-hosted.
 
 What comes out the other end is the part most builders quietly compromise on: plain semantic HTML and compact CSS, with none of the editor's machinery left behind in the page. No framework runtime, no builder attributes, no div soup. The site loads like a static file because, most of the time, it is one.
 

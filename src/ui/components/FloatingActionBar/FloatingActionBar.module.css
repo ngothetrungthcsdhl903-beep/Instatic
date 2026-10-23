@@ -17,7 +17,7 @@
     gap: var(--space-m);
     height: 40px;
     padding: 0 var(--space-xs) 0 var(--space-xl);
-    background: var(--bg-surface);
+    background: transparent;
     border: 1px solid var(--bg-surface-3);
     border-radius: 20px;
     box-shadow:

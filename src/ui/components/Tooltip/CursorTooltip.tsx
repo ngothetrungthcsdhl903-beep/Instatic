@@ -67,6 +67,7 @@ export function CursorTooltip({
       id={id}
       role="tooltip"
       className={cn(styles.bubble, styles.visible)}
+      data-k-material="thin"
       data-side="cursor"
       style={bubbleStyle}
     >

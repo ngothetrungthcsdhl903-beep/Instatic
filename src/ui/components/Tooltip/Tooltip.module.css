@@ -25,7 +25,7 @@
 
     padding: var(--space-xs) var(--space-m);
 
-    background: var(--bg-body);
+    background: transparent;
     color: var(--text-bright);
     border: 1px solid var(--overlay-5);
     border-radius: var(--tooltip-radius);

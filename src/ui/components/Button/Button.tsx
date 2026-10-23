@@ -68,7 +68,7 @@ export function Button(
     iconOnly = false,
     pressed,
     active = false,
-    accentFill: _accentFill = false,
+    accentFill = false,
     fullWidth = false,
     menuItem = false,
     navItem = false,
@@ -139,6 +139,7 @@ export function Button(
           menuItem && styles.menuItem,
           navItem && styles.navItem,
           numeric && styles.numeric,
+          accentFill && styles.accentFill,
           className,
         )}
         {...restProps}

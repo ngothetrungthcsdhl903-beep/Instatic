@@ -11,7 +11,7 @@
     position: relative;
     z-index: 30;
     user-select: none;
-    background: var(--bg-body);
+    background: transparent;
 }
 
 .siteName {

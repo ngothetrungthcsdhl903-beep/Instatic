@@ -200,7 +200,7 @@ export function SettingsModal() {
             otherwise blur to `<body>` and let the next Tab walk the page
             behind the modal. Excluded from the focusable query above by its
             own `:not([tabindex="-1"])` clause. */}
-        <div className={s.panel} tabIndex={-1} data-accent={activeItem.accent}>
+        <div className={s.panel} tabIndex={-1} data-accent={activeItem.accent} data-k-material="thick">
           {/* Screen-reader description */}
           <p id="settings-modal-desc" className={s.srOnly}>
             Site-level configuration. Press Escape to close.

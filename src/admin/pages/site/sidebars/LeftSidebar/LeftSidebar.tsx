@@ -92,6 +92,7 @@ export function LeftSidebar({
     <aside
       ref={sidebarRef}
       className={styles.sidebar}
+      data-k-material="regular"
       data-testid="left-sidebar"
       data-expanded={panelExpanded ? 'true' : 'false'}
       data-rail-only={railOnly ? 'true' : undefined}
@@ -231,6 +232,7 @@ function FloatingPanelHost({
     <div
       ref={floating ? setPanelRef : undefined}
       className={cn(styles.panelSlot, floating && styles.panelSlotFloating)}
+      data-k-material={floating ? 'regular' : undefined}
       data-testid={`left-panel-${panelId}-host`}
       data-mode={mode}
       hidden={!visible}

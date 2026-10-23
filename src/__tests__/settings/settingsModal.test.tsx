@@ -605,7 +605,8 @@ describe('SettingsModal — WCAG 2.4.7 input focus rings (source enforcement)', 
 
   it('Input primitive has a visible :focus / :focus-within style', () => {
     expect(inputCss).toMatch(/:focus(-within)?/)
-    expect(inputCss).toContain('--overlay-50')
+    expect(inputCss).toContain('--k-color-control-border')
+    expect(inputCss).toContain('--k-color-focus-ring')
   })
 
   it('Select primitive has a visible focus indicator', () => {

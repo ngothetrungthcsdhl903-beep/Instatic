@@ -92,6 +92,8 @@ afterEach(() => {
 
 function resetStore() {
   localStorage.clear()
+  // These tests cover the classic rail. The site editor defaults to Keijam.
+  localStorage.setItem('keijam.chrome', 'classic')
   useEditorStore.setState({
     site: null,
     activePageId: null,

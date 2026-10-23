@@ -10,11 +10,10 @@
     top: max(var(--space-m), min(var(--panel-y), calc(100vh - var(--media-viewer-height) - var(--space-m))));
     width: var(--media-viewer-width);
     height: var(--media-viewer-height);
-    background: var(--bg-surface);
+    background: transparent;
     border: 1px solid var(--overlay-10);
     border-radius: var(--panel-radius);
     box-shadow: var(--shadow-panel);
-    backdrop-filter: blur(var(--panel-blur));
     display: flex;
     flex-direction: column;
     overflow: hidden;

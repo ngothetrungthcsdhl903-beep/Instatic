@@ -147,7 +147,7 @@ export function PreviewOverlay() {
         className={styles.dialogWrapper}
       >
         {/* Inner card */}
-        <div className={styles.card}>
+        <div className={styles.card} data-k-material="thick">
           {/* ── Header bar ──────────────────────────────────────────────── */}
           <div className={styles.header}>
             <EyeSolidIcon size={14} color="var(--text-muted)" className={styles.headerIcon} />

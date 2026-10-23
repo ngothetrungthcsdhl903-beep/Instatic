@@ -20,7 +20,6 @@
     inset: 0;
     z-index: var(--spotlight-z-index);
     background: var(--scrim-50);
-    backdrop-filter: blur(var(--backdrop-blur));
     display: flex;
     align-items: flex-start;
     justify-content: center;
@@ -54,7 +53,7 @@
     width: var(--spotlight-width);
     max-width: calc(100vw - 32px);
     max-height: min(60vh, 560px);
-    background: var(--bg-surface);
+    background: transparent;
     border: 1px solid var(--overlay-10);
     border-radius: var(--panel-radius);
     box-shadow: var(--shadow-panel);
