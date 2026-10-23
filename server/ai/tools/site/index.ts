@@ -11,6 +11,7 @@
  */
 
 import type { AiTool } from '../types'
+import { keijamDesignTools } from '../keijam/designTools'
 import { siteReadTools } from './readTools'
 import { siteWriteTools } from './writeTools'
 
@@ -22,6 +23,15 @@ const READ_ONLY_NAMES_IN_WRITE_FILE = new Set([
   'site_read_code_asset',
   'site_inspect_code_runtime',
   'site_render_snapshot',
+])
+
+const KEIJAM_READ_ONLY = new Set([
+  'keijam_select',
+  'keijam_get_selection',
+  'keijam_get_node',
+  'keijam_list_nodes',
+  'keijam_list_components',
+  'keijam_export',
 ])
 
 function stampMutationFlag(tools: AiTool[], isMutating: boolean): AiTool[] {
@@ -36,6 +46,9 @@ function stampMutationFlag(tools: AiTool[], isMutating: boolean): AiTool[] {
 export const siteTools: AiTool[] = [
   ...stampMutationFlag(siteReadTools, false),
   ...stampMutationFlag(siteWriteTools, true),
+  ...stampMutationFlag(keijamDesignTools, true).map((tool) => (
+    KEIJAM_READ_ONLY.has(tool.name) ? { ...tool, mutates: false } : tool
+  )),
 ]
 
 export { buildSiteSystemPrompt } from './systemPrompt'

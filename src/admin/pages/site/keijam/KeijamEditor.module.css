@@ -234,6 +234,11 @@
     box-shadow: 0 0 0 1px var(--k-color-accent);
 }
 
+.frame[data-kj-culled='true'] {
+    content-visibility: auto;
+    contain-intrinsic-size: auto var(--kj-frame-h);
+}
+
 .item {
     position: var(--kj-position);
     left: var(--kj-left);

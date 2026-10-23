@@ -73,6 +73,7 @@ import { importHtml } from '@core/htmlImport'
 import type { BaseNode, PageTemplateConfig } from '@core/page-tree'
 import { renderNode, type RenderConfig, type RenderAccumulators } from '@core/publisher'
 import { getAgentStoreApi } from './storeRef'
+import { executeKeijamTool } from '../keijam/agentCommands'
 import { whenCollabWritable } from '@site/store/slices/site/collabWriteGate'
 import { AUTO_NAVIGATE_TOOLS, SITE_MUTATION_TOOLS } from './toolClassification'
 import {
@@ -604,6 +605,10 @@ export async function executeAgentTool(
     if (AUTO_NAVIGATE_TOOLS.has(toolName)) {
       const targetId = targetNodeIdFromInput(rawInput)
       if (targetId) focusNodeDocument(getStoreState(), targetId)
+    }
+
+    if (toolName.startsWith('keijam_')) {
+      return executeKeijamTool(toolName, rawInput)
     }
 
     switch (toolName) {

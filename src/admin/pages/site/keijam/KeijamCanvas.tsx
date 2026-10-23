@@ -4,16 +4,23 @@ import type { Breakpoint, PageNode, SiteDocument, StyleRule } from '@core/page-t
 import { getNodeDisplayName } from '@core/page-tree'
 import { registry } from '@core/module-engine'
 import { useEditorStore, selectActiveCanvasPage } from '@site/store/store'
-import type { Handle, Guide, DistanceLabel, Rect, View } from '../../../../keijam'
+import type { Box, Handle, Guide, DistanceLabel, PaintStamp, Rect, View } from '../../../../keijam'
 import {
   boundsOf,
+  decodeStamps,
+  dirtyIds,
+  encodeStamps,
   insertionIndex,
+  isCulled,
   layoutStyleVars,
   layoutToCss,
+  paintSignature,
   placeFrames,
   resizeRect,
+  screenBox,
   snapMove,
   snapResize,
+  visibleFrameWindow,
   zoomAtPoint,
   zoomToFit,
 } from '../../../../keijam'
@@ -27,6 +34,7 @@ import styles from './KeijamEditor.module.css'
 
 const EMPTY_BREAKPOINTS: Breakpoint[] = []
 const HANDLES: Handle[] = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w']
+const FRAME_LABEL_OFFSET = 36
 
 interface Preview {
   rects: Record<string, Rect>
@@ -49,6 +57,8 @@ export function KeijamCanvas({ editable, activeBreakpointId, onActivate }: Keija
   const selectedIds = useEditorStore((s) => s.selectedNodeIds)
   const visualComponents = useEditorStore((s) => s.site?.visualComponents)
   const viewportRef = useRef<HTMLDivElement>(null)
+  const paintedRef = useRef<PaintStamp[]>([])
+  const [viewport, setViewport] = useState<Box>({ x: 0, y: 0, width: 0, height: 0 })
   const [view, setView] = useState<View>({ zoom: 0.8, panX: 48, panY: 72 })
   const viewRef = useRef(view)
   const [preview, setPreview] = useState<Preview | null>(null)
@@ -66,6 +76,30 @@ export function KeijamCanvas({ editable, activeBreakpointId, onActivate }: Keija
     : null
   const frameHeight = rootLayout?.height.mode === 'fixed' ? rootLayout.height.px : 800
   const placed = placeFrames(frames.map((frame) => ({ id: frame.id, width: frame.width, height: frameHeight })), 96)
+
+  const stampKey = encodeStamps(page ? collectStamps(page, rules, frames, new Set(selectedIds)) : [])
+  useEffect(() => {
+    const next = decodeStamps(stampKey)
+    const dirty = new Set(dirtyIds(paintedRef.current, next))
+    paintedRef.current = next
+    const root = viewportRef.current
+    if (!root) return
+    for (const el of root.querySelectorAll<HTMLElement>('[data-kj-node]')) {
+      const frameId = el.closest<HTMLElement>('[data-kj-frame]')?.dataset.kjFrame ?? ''
+      const nodeId = el.dataset.kjNode ?? ''
+      el.dataset.kjDirty = dirty.has(`${frameId}:${nodeId}`) ? 'true' : 'false'
+    }
+  }, [stampKey])
+
+  useEffect(() => {
+    const el = viewportRef.current
+    if (!el) return
+    const update = () => setViewport({ x: 0, y: 0, width: el.clientWidth, height: el.clientHeight })
+    update()
+    const observer = new ResizeObserver(update)
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     const el = viewportRef.current
@@ -383,10 +417,17 @@ export function KeijamCanvas({ editable, activeBreakpointId, onActivate }: Keija
           const active = frame.id === activeBreakpointId
           const frameStyle = {
             '--kj-frame-x': `${frame.x}px`,
-            '--kj-frame-y': '36px',
+            '--kj-frame-y': `${FRAME_LABEL_OFFSET}px`,
             '--kj-frame-w': `${frame.width}px`,
             '--kj-frame-h': `${frame.height}px`,
           } as CSSProperties
+          const frameOrigin = { x: frame.x, y: FRAME_LABEL_OFFSET }
+          const frameScreen = screenBox(
+            { x: 0, y: 0, width: frame.width, height: frame.height },
+            view,
+            frameOrigin,
+          )
+          const culledFrame = isCulled(frameScreen, viewport)
           return (
             <div key={frame.id} className={styles.frameWrap} style={frameStyle}>
               <div className={active ? `${styles.frameLabel} ${styles.frameLabelActive}` : styles.frameLabel}>
@@ -395,23 +436,27 @@ export function KeijamCanvas({ editable, activeBreakpointId, onActivate }: Keija
               <div
                 className={active ? `${styles.frame} ${styles.frameActive}` : styles.frame}
                 data-kj-frame={frame.id}
+                data-kj-culled={culledFrame ? 'true' : 'false'}
               >
-                <NodeView
-                  nodeId={page.rootNodeId}
-                  nodes={page.nodes}
-                  rootId={page.rootNodeId}
-                  rules={rules}
-                  breakpointId={frame.id}
-                  isBase={breakpoints.length === 0 || frame.id === widestId(breakpoints)}
-                  selectedIds={selectedIds}
-                  hoverId={hoverId}
-                  preview={preview}
-                  editable={editable}
-                  visualComponents={visualComponents}
-                  onPointerDown={onNodePointerDown}
-                  onHandlePointerDown={onHandlePointerDown}
-                  onHover={setHoverId}
-                />
+                {culledFrame ? null : (
+                  <NodeView
+                    nodeId={page.rootNodeId}
+                    nodes={page.nodes}
+                    rootId={page.rootNodeId}
+                    rules={rules}
+                    breakpointId={frame.id}
+                    isBase={breakpoints.length === 0 || frame.id === widestId(breakpoints)}
+                    selectedIds={selectedIds}
+                    hoverId={hoverId}
+                    preview={preview}
+                    editable={editable}
+                    visualComponents={visualComponents}
+                    frameWindow={visibleFrameWindow(view, viewport, frameOrigin)}
+                    onPointerDown={onNodePointerDown}
+                    onHandlePointerDown={onHandlePointerDown}
+                    onHover={setHoverId}
+                  />
+                )}
               </div>
             </div>
           )
@@ -439,6 +484,7 @@ interface NodeViewProps {
   preview: Preview | null
   editable: boolean
   visualComponents: SiteDocument['visualComponents'] | undefined
+  frameWindow: Box
   onPointerDown: (event: ReactPointerEvent<HTMLDivElement>, nodeId: string, breakpointId: string) => void
   onHandlePointerDown: (event: ReactPointerEvent<HTMLDivElement>, nodeId: string, handle: Handle, breakpointId: string) => void
   onHover: (id: string | null) => void
@@ -459,6 +505,14 @@ function NodeView(props: NodeViewProps) {
     css.height = `${Math.round(previewRect.height)}px`
   }
   const selected = props.selectedIds.includes(node.id)
+  const fixedTopLevel = node.parentId === props.rootId
+    && layout.placed
+    && layout.width.mode === 'fixed'
+    && layout.height.mode === 'fixed'
+  const nodeBox = fixedTopLevel
+    ? { x: layout.x, y: layout.y, width: layout.width.px, height: layout.height.px }
+    : null
+  if (!props.preview && !selected && props.hoverId !== node.id && isCulled(nodeBox, props.frameWindow)) return null
   const showHandles = selected && props.editable && !node.locked && node.id !== props.rootId && props.selectedIds.length === 1
   const shift = props.preview?.shift?.nodeId === node.id ? props.preview.shift : null
   const name = getNodeDisplayName(node, registry.get(node.moduleId), props.visualComponents)
@@ -562,7 +616,39 @@ function measure(el: HTMLElement, parent: HTMLElement, zoom: number): Rect {
   }
 }
 
-function widestId(breakpoints: readonly Breakpoint[]): string {
+function collectStamps(
+  page: { nodes: Record<string, PageNode>; rootNodeId: string },
+  rules: Record<string, StyleRule> | undefined,
+  frames: readonly { id: string; width: number }[],
+  selected: ReadonlySet<string>,
+): PaintStamp[] {
+  const out: PaintStamp[] = []
+  for (const frame of frames) {
+    const isBase = frame.id === widestId(frames)
+    const visit = (id: string) => {
+      const node = page.nodes[id]
+      if (!node) return
+      const context = layoutContextFor(node, page.nodes, page.rootNodeId, rules, frame.id, isBase)
+      const layout = readNodeLayout(node, rules, context, frame.id, isBase)
+      out.push({
+        id: `${frame.id}:${node.id}`,
+        signature: paintSignature({
+          layout,
+          text: typeof node.props.text === 'string' ? node.props.text : '',
+          src: typeof node.props.src === 'string' ? node.props.src : '',
+          hidden: Boolean(node.hidden),
+          childIds: node.children,
+          selected: selected.has(node.id),
+        }),
+      })
+      for (const childId of node.children) visit(childId)
+    }
+    visit(page.rootNodeId)
+  }
+  return out
+}
+
+function widestId(breakpoints: readonly { id: string; width: number }[]): string {
   let best = breakpoints[0]
   for (const breakpoint of breakpoints) {
     if (!best || breakpoint.width > best.width) best = breakpoint

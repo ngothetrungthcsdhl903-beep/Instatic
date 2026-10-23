@@ -134,12 +134,12 @@ const BUDGETS: ChunkBudget[] = [
   },
   {
     prefix: 'AdminCanvasEditorBody-',
-    maxBytes: 780_000,
+    maxBytes: 870_000,
     rationale:
-      'post-paint Site editor body (canvas + panels + modules + publisher). ' +
-      'Current ~724 KB raw / ~228 KB gzipped after moving Import HTML behind ' +
-      'its own open-state lazy boundary. This is still the main Site runtime ' +
-      'cost, but it must remain behind the shell lazy boundary.',
+      'post-paint Site editor body (canvas + panels + modules + publisher + ' +
+      'Keijam shell and agent commands). Current ~801 KB raw / ~262 KB gzip. ' +
+      'The gzip budget for this chunk is 300 KB (`bun run size`). It must stay ' +
+      'behind the shell lazy boundary.',
   },
   {
     prefix: 'ImportHtml-',
