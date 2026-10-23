@@ -59,3 +59,34 @@ export { decodeStamps, dirtyIds, encodeStamps, paintSignature } from './paint'
 export type { PaintStamp } from './paint'
 export { CLEAN_EXPORT_GZIP_BUDGET, exportCleanDocument, gzipByteLength } from './exportClean'
 export type { CleanExport } from './exportClean'
+export {
+  componentFromDescription,
+  componentIdent,
+  lowerCodeComponent,
+  parseCodeComponent,
+  previewLabel,
+  readValuesJson,
+} from './codeComponent'
+export type { CodeControl, CodeControlType, ParsedCodeComponent } from './codeComponent'
+export { EFFECT_KINDS, effectKindFromProps, effectScriptTags, effectsOnPage, loaderBytes } from './effects'
+export type { EffectKind } from './effects'
+export {
+  MOTION_FILE_PATH,
+  MotionDocumentSchema,
+  MotionMachineSchema,
+  emptyMachine,
+  exportMotion,
+  motionAttributeValue,
+  parseMotionDocument,
+  recordKeyframe,
+  sampleEase,
+} from './motion'
+export type {
+  MotionDocument,
+  MotionEase,
+  MotionExport,
+  MotionKeyframe,
+  MotionMachine,
+  MotionState,
+  MotionTransition,
+} from './motion'

@@ -4,12 +4,11 @@ import { Button } from '@ui/components/Button'
 import { ColorInput } from '@ui/components/ColorInput'
 import { Input } from '@ui/components/Input'
 import { useEditorStore, selectActiveCanvasPage } from '@site/store/store'
-import type { AxisSize, Interactions, KeijamLayout, LayoutMode, StackDirection } from '../../../../keijam'
+import type { AxisSize, KeijamLayout, LayoutMode, StackDirection } from '../../../../keijam'
+import { effectKindFromProps, type EffectKind } from '../../../../keijam'
 import {
-  commitInteractions,
   commitLayout,
   layoutContextFor,
-  readNodeInteractions,
   readNodeLayout,
 } from './layoutBridge'
 import styles from './KeijamEditor.module.css'
@@ -160,39 +159,44 @@ export function KeijamProperties({ activeBreakpointId, isBase }: PanelProps) {
 
       {selected.moduleId === 'base.text' ? <TextFields node={selected} layout={layout} commit={commit} /> : null}
       {selected.moduleId === 'base.image' ? <ImageFields node={selected} layout={layout} commit={commit} /> : null}
+
+      {selected.id !== page.rootNodeId ? (
+        <>
+          <p className={styles.section}>Effect</p>
+          <Field label="Plugin">
+            <Seg
+              value={effectKindFromProps(selected.props) ?? 'none'}
+              options={[
+                { value: 'none', label: 'None' },
+                { value: 'webgl', label: 'WebGL' },
+                { value: 'three', label: 'Three' },
+                { value: 'gsap', label: 'GSAP' },
+              ]}
+              onChange={(effect) => setEffect(selected.id, effect)}
+            />
+          </Field>
+          <p className={styles.hint}>WebGL, Three.js, and GSAP load only on pages that use them.</p>
+        </>
+      ) : null}
     </div>
   )
 }
 
-export function KeijamInteractions({ activeBreakpointId, isBase }: PanelProps) {
-  const page = useEditorStore(selectActiveCanvasPage)
-  const rules = useEditorStore((s) => s.site?.styleRules)
-  const selectedId = useEditorStore((s) => s.selectedNodeId)
-  const node = selectedId && page ? page.nodes[selectedId] : undefined
-  if (!node || node.id === page?.rootNodeId) {
-    return <p className={styles.hint}>Select a layer to edit hover and press.</p>
+function setEffect(nodeId: string, effect: EffectKind | 'none'): void {
+  const node = useEditorStore.getState().site
+    ? selectActiveCanvasPage(useEditorStore.getState())?.nodes[nodeId]
+    : undefined
+  if (!node) return
+  const raw = node.props.htmlAttributes
+  const attrs: Record<string, string> = {}
+  if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
+    for (const [key, value] of Object.entries(raw)) {
+      if (typeof value === 'string') attrs[key] = value
+    }
   }
-  const selected = node
-  const interactions = readNodeInteractions(rules, selected.id)
-  function commit(next: Interactions) {
-    commitInteractions(selected.id, next)
-  }
-  return (
-    <div className={styles.scroll}>
-      <p className={styles.section}>Hover</p>
-      <StateFields state={interactions.hover} onChange={(hover) => commit({ ...interactions, hover })} />
-      <p className={styles.section}>Press</p>
-      <StateFields state={interactions.press} onChange={(press) => commit({ ...interactions, press })} />
-      <p className={styles.section}>Transition</p>
-      <Field label="Duration">
-        <Num label="Transition milliseconds" value={interactions.transitionMs} onCommit={(transitionMs) => commit({ ...interactions, transitionMs })} />
-      </Field>
-      <p className={styles.hint}>
-        Hover and press publish as CSS on this layer. Page links, overlays, and scroll animation are a later phase.
-        {isBase ? '' : ` Overrides follow the ${activeBreakpointId} frame for layout; states stay on the layer.`}
-      </p>
-    </div>
-  )
+  if (effect === 'none') delete attrs['data-kj-effect']
+  else attrs['data-kj-effect'] = effect
+  useEditorStore.getState().updateNodeProps(nodeId, { htmlAttributes: attrs })
 }
 
 function TextFields({ node, layout, commit }: { node: PageNode; layout: KeijamLayout; commit: (next: KeijamLayout) => void }) {
@@ -254,41 +258,6 @@ function ImageFields({ node, layout, commit }: { node: PageNode; layout: KeijamL
           value={layout.objectFit ?? 'cover'}
           options={[{ value: 'cover', label: 'Cover' }, { value: 'contain', label: 'Contain' }]}
           onChange={(objectFit) => commit({ ...layout, objectFit })}
-        />
-      </Field>
-    </>
-  )
-}
-
-function StateFields({
-  state,
-  onChange,
-}: {
-  state: Interactions['hover']
-  onChange: (next: Interactions['hover']) => void
-}) {
-  return (
-    <>
-      <Field label="Fill">
-        <ColorInput
-          aria-label="State fill"
-          fieldSize="xs"
-          value={state.backgroundColor ?? '#2a68f1'}
-          onChange={(event) => onChange({ ...state, backgroundColor: event.target.value })}
-        />
-      </Field>
-      <Field label="Opacity">
-        <Num
-          label="State opacity"
-          value={Math.round((state.opacity ?? 1) * 100)}
-          onCommit={(value) => onChange({ ...state, opacity: clamp01(value / 100) })}
-        />
-      </Field>
-      <Field label="Scale">
-        <Num
-          label="State scale"
-          value={Math.round((state.scale ?? 1) * 100)}
-          onCommit={(value) => onChange({ ...state, scale: Math.max(0, value) / 100 })}
         />
       </Field>
     </>

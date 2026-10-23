@@ -34,6 +34,9 @@ export const AUTO_NAVIGATE_TOOLS: ReadonlySet<string> = new Set([
   'keijam_set_breakpoint',
   'keijam_get_node',
   'keijam_insert_component',
+  'keijam_paste_component',
+  'keijam_set_effect',
+  'keijam_set_motion',
 ])
 
 /**
@@ -83,6 +86,10 @@ export const SITE_MUTATION_TOOLS: ReadonlySet<string> = new Set([
   'keijam_set_font_tokens',
   'keijam_set_type_scale',
   'keijam_set_spacing_scale',
+  'keijam_generate_component',
+  'keijam_paste_component',
+  'keijam_set_effect',
+  'keijam_set_motion',
   'keijam_undo',
   'keijam_redo',
 ])

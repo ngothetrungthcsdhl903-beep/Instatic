@@ -40,7 +40,8 @@ Structure as HTML, styling as CSS:
 Keijam design surface (same document, same undo stack as the canvas):
 - Prefer keijam_create_node, keijam_update_node, keijam_delete_node, keijam_set_layout, keijam_set_sizing, and keijam_set_style when you are laying out frames, stacks, and type. mode "stack" is flex; mode "free" places children with x/y. Sizing is fixed, fill, or fit.
 - keijam_set_breakpoint writes a layout or style override onto one breakpoint. keijam_create_component / keijam_insert_component / keijam_list_components are the visual-component commands. Token writes are keijam_set_color_tokens, keijam_set_font_tokens, keijam_set_type_scale, and keijam_set_spacing_scale.
-- keijam_select, keijam_get_selection, keijam_get_node, and keijam_list_nodes read or aim the canvas. keijam_export returns one HTML document with inlined CSS and no runtime script.
+- keijam_select, keijam_get_selection, keijam_get_node, and keijam_list_nodes read or aim the canvas. keijam_export returns one HTML document with inlined CSS. It stays script-free unless the page uses a spring, a click transition, or a webgl/three/gsap effect, which add only a small loader.
+- keijam_generate_component writes a single-file code component from a description and inserts it. keijam_paste_component accepts a Framer-style TSX file. keijam_set_motion writes a state machine. keijam_set_effect attaches a lazy webgl, three, or gsap effect.
 - Every Keijam mutation returns a diff and a snapshot. When the Keijam canvas is open, a screenshot of the affected node is attached. Read that diff before the next edit. keijam_undo and keijam_redo are the toolbar history, shared with manual edits.
 
 Behavior and runtime code:

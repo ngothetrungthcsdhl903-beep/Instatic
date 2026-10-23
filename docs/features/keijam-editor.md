@@ -28,7 +28,19 @@ MCP and the in-editor agent call `keijam_*` tools (`server/ai/tools/keijam/desig
 
 A mutation returns `diff` and `snapshot`. If `[data-kj-shell]` is mounted, it also screenshots the affected node with `html-to-image` and attaches the PNG. Headless calls skip that wait and still return the diff.
 
-`keijam_export` calls `exportCleanDocument`. That publish path sets `runtime: 'static'`, inlines dynamic nodes, and strips any script or `<instatic-hole>` that remains. The gzip budget is 80 KB (`CLEAN_EXPORT_GZIP_BUDGET`).
+`keijam_export` calls `exportCleanDocument`. That publish path sets `runtime: 'static'`, inlines dynamic nodes, and strips the hole runtime. A page with no effect and no motion runner has no `<script>`. The gzip budget is 80 KB (`CLEAN_EXPORT_GZIP_BUDGET`).
+
+## Code components
+
+A code component is one file under `src/components/*.tsx`. The code panel edits that file. `parseCodeComponent` reads `addPropertyControls` and `defaultProps` (string, number, boolean, enum, color). The inspector shows those controls. Publish lowers a small JSX subset (tags, `style={{ }}`, `props.*`) to HTML. It does not run React. A pasted `withX` override is stored and not executed. `keijam_generate_component` writes a file from a description and inserts a frame. `keijam_paste_component` accepts a Framer-style file.
+
+## Animate
+
+Design and Animate are separate modes. Animate edits a state machine stored in `src/keijam/motion.json`: states, keyframes, transitions (`hover`, `press`, `click`, `load`), conditions, and a cubic or spring ease. Record plus Capture writes the layer's current box onto the playhead. The curve is the ease sampled into bars. Hover and load with a cubic ease export as CSS `@keyframes`. A spring, a click, or a condition adds one small Web Animations script. The Rive runtime is not included.
+
+## Effects
+
+A layer's Effect control is `none`, `webgl`, `three`, or `gsap` (`data-kj-effect`). The clean export adds a short `<script type="module">` only for kinds the page uses. Three.js and GSAP are dynamic imports. A page that does not use them does not mention them. The document stays inside the 80 KB gzip budget.
 
 ## Canvas performance
 
@@ -36,4 +48,4 @@ Off-screen breakpoint frames are not mounted (`data-kj-culled`). Fixed top-level
 
 ## Deferred
 
-Components and variants, grid beyond stack, pin constraints, vectors, effects, page-to-page prototyping, inline rich text, and the media-library image picker are not in this surface yet. Image source is a URL field. Hover and press are background, opacity, and scale with a CSS transition.
+Grid beyond stack, pin constraints, vectors, page-to-page prototyping, inline rich text, and the media-library image picker are not in this surface yet. Image source is a URL field. Property controls beyond string, number, boolean, color, and enum are not parsed. The JSX lowerer does not run arbitrary component code.

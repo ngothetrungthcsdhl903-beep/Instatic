@@ -95,6 +95,10 @@ export {
   KeijamSizingSchema,
   KeijamStylePatchSchema,
   KeijamUpdateNodeInputSchema,
+  KeijamGenerateComponentInputSchema,
+  KeijamPasteComponentInputSchema,
+  KeijamSetEffectInputSchema,
+  KeijamSetMotionInputSchema,
 } from './keijamCommands'
 export type {
   KeijamCreateComponentInput,
@@ -114,6 +118,10 @@ export type {
   KeijamSizingInput,
   KeijamStylePatch,
   KeijamUpdateNodeInput,
+  KeijamGenerateComponentInput,
+  KeijamPasteComponentInput,
+  KeijamSetEffectInput,
+  KeijamSetMotionInput,
 } from './keijamCommands'
 export type {
   InsertHtmlInput,
