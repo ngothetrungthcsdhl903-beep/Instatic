@@ -86,7 +86,7 @@ export function KeijamEditor({ editable, loadError, onUseClassic }: KeijamEditor
   }, [activeBreakpointId, editable, isBase])
 
   return (
-    <div className={styles.shell}>
+    <div className={styles.shell} data-kj-shell="">
       <header className={styles.toolbar} data-k-material="regular">
         <span className={styles.brand}>
           <span className={styles.mark} aria-hidden="true" />

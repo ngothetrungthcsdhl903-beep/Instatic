@@ -1,8 +1,6 @@
 import { create } from 'zustand'
 import { mutative } from 'zustand-mutative'
 import { subscribeWithSelector } from 'zustand/middleware'
-import type { Page } from '@core/page-tree'
-import { flattenVCToVirtualPage } from '@core/visualComponents'
 import type { EditorStore } from './types'
 import { createSiteSlice } from './slices/siteSlice'
 import { createSelectionSlice } from './slices/selectionSlice'
@@ -22,6 +20,9 @@ import { bindPluginRuntimeStoreApi } from '@core/plugins/runtime'
 import { useAdminUi } from '@admin/state/adminUi'
 import { readWorkspaceLayout, workspaceFromPathname } from '@admin/state/workspaceLayoutStorage'
 import { restoreStoredSiteEditorLayout } from '@site/layout/siteEditorLayoutPersistence'
+import { selectActiveCanvasPage } from './selectors'
+
+export { selectActivePage, selectActiveCanvasPage } from './selectors'
 
 /**
  * EditorStore — the central Zustand store for the visual editor.
@@ -163,35 +164,9 @@ bindPluginRuntimeStoreApi(useEditorStore)
 // ---------------------------------------------------------------------------
 // Convenience typed selectors — use these instead of accessing store directly
 // to keep component subscriptions granular and avoid unnecessary re-renders.
+// Page selectors live in `./selectors` so the design surface can use them
+// without importing this module.
 // ---------------------------------------------------------------------------
-
-// Single-slot memo for the active-page lookup. Zustand re-runs EVERY
-// subscriber's selector on every store set, and each canvas NodeRenderer
-// mounts several subscriptions that resolve the active page — so an
-// unmemoized `pages.find` here costs O(nodes × pages) per store change.
-// Keying on (site, activePageId) identity makes the first selector after a
-// set pay the O(pages) scan once; every other subscriber in the same sweep
-// hits the cache. Mutative copy-on-write replaces `site` exactly when
-// anything inside it changes, so invalidation is automatic — and the cached
-// page is the same object `find` would return, so subscriber outputs keep
-// their referential stability.
-let _activePageCache: { site: object; activePageId: string; page: Page | null } | null = null
-
-/** Select the active page from the site (one `pages` scan per store update). */
-export const selectActivePage = (s: EditorStore): Page | null => {
-  const { site, activePageId } = s
-  if (!site || !activePageId) return null
-  if (
-    _activePageCache &&
-    _activePageCache.site === site &&
-    _activePageCache.activePageId === activePageId
-  ) {
-    return _activePageCache.page
-  }
-  const page = site.pages.find((p) => p.id === activePageId) ?? null
-  _activePageCache = { site, activePageId, page }
-  return page
-}
 
 /** Select whether the docked right sidebar is currently taking layout space. */
 export const selectRightSidebarExpanded = (s: EditorStore) =>
@@ -202,55 +177,6 @@ export const selectRightSidebarExpanded = (s: EditorStore) =>
       s.selectedSelectorClassId ||
       s.selectedSelectorClassIds.length > 0,
   )
-
-// ---------------------------------------------------------------------------
-// selectActiveCanvasPage — VC-aware canvas page selector (Task #438)
-//
-// When activeDocument is a VC, builds a virtual Page from the VC's rootNode
-// tree so NodeRenderer + BreakpointFrame work unchanged.
-//
-// Memoised via WeakMap keyed on vc (the whole VC object) — Mutative gives a new
-// ref on ANY field change (name, params, rootNode…), so the WeakMap
-// misses precisely when the VC changes and we rebuild.  Same-reference vc → cache hit.
-// ---------------------------------------------------------------------------
-
-/** @internal — module-level WeakMap for stable virtual-page references */
-const _vcVirtualPageCache = new WeakMap<object, Page>()
-
-/**
- * Select the current canvas document as a Page.
- *
- * - activeDocument === null or kind === 'page': returns the active page (same as selectActivePage).
- * - activeDocument.kind === 'visualComponent': returns a virtual Page built from the VC's rootNode.
- *   The virtual Page is memoised via WeakMap on vc (the whole VC object) so Zustand's Object.is
- *   check passes between renders when the VC has not mutated.
- */
-export const selectActiveCanvasPage = (s: EditorStore): Page | null => {
-  const { activeDocument } = s
-
-  if (!activeDocument || activeDocument.kind === 'page') {
-    return selectActivePage(s)
-  }
-
-  if (activeDocument.kind === 'visualComponent') {
-    const vc = s.site?.visualComponents?.find(
-      (v) => v.id === activeDocument.vcId,
-    ) ?? null
-    if (!vc) return null
-
-    // WeakMap key: vc object — Mutative gives a new ref on ANY field change (name,
-    // params, tree…). Keying on vc.tree would miss renames because Mutative reuses
-    // the tree object when only top-level VC fields change (O-2 / CR #666 finding).
-    const cached = _vcVirtualPageCache.get(vc as object)
-    if (cached) return cached
-
-    const virtualPage = flattenVCToVirtualPage(vc)
-    _vcVirtualPageCache.set(vc as object, virtualPage)
-    return virtualPage
-  }
-
-  return null
-}
 
 /**
  * Select the currently selected PageNode.

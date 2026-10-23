@@ -21,8 +21,8 @@ import {
   replaceLayoutPatch,
 } from '../../../../keijam'
 import type { Interactions } from '../../../../keijam'
-import { useEditorStore } from '@site/store/store'
-import { selectActiveCanvasPage } from '@site/store/store'
+import { editorState } from '../agent/editorState'
+import { selectActiveCanvasPage } from '@site/store/selectors'
 
 type StyleMap = Record<string, StyleRule>
 
@@ -79,7 +79,7 @@ export function commitLayout(
   ensureCanvasRoot(nodeId, breakpointId, isBase)
   const rule = ensureKeijamClass(nodeId)
   if (!rule) return
-  const store = useEditorStore.getState()
+  const store = editorState()
   const next = layoutToCss(layout, context)
   if (isBase) {
     store.updateClassStyles(rule.id, replaceLayoutPatch(rule.styles, next) as Partial<CSSPropertyBag>)
@@ -103,8 +103,8 @@ export function commitInteractions(nodeId: string, interactions: Interactions): 
   if (!rule) return
   const selector = styleRuleSelector(rule)
   const css = interactionsToCss(selector, interactions)
-  const store = useEditorStore.getState()
-  const fresh = useEditorStore.getState().site?.styleRules[rule.id] ?? rule
+  const store = editorState()
+  const fresh = editorState().site?.styleRules[rule.id] ?? rule
   store.updateClassStyles(fresh.id, { transition: css.transition } as Partial<CSSPropertyBag>)
   writeAmbient(css.hover?.selector ?? `${selector}:hover`, css.hover?.styles ?? null)
   writeAmbient(css.press?.selector ?? `${selector}:active`, css.press?.styles ?? null)
@@ -115,8 +115,9 @@ export function insertKeijamNode(
   parentId: string,
   breakpointId: string,
   isBase: boolean,
+  index?: number,
 ): string {
-  const store = useEditorStore.getState()
+  const store = editorState()
   const page = selectActiveCanvasPage(store)
   if (!page?.nodes[parentId]) return ''
   const moduleId = kind === 'frame' ? 'base.container' : kind === 'text' ? 'base.text' : 'base.image'
@@ -125,12 +126,12 @@ export function insertKeijamNode(
     : kind === 'image'
       ? { src: '' }
       : { tag: 'div' }
-  const id = store.insertNode(moduleId, defaults, parentId)
+  const id = store.insertNode(moduleId, defaults, parentId, index)
   if (!id) return ''
-  const nextPage = selectActiveCanvasPage(useEditorStore.getState())
+  const nextPage = selectActiveCanvasPage(editorState())
   const node = nextPage?.nodes[id]
   if (!node || !nextPage) return id
-  const rules = useEditorStore.getState().site?.styleRules
+  const rules = editorState().site?.styleRules
   const context = layoutContextFor(node, nextPage.nodes, nextPage.rootNodeId, rules, breakpointId, isBase)
   const layout = defaultLayout(kind)
   const siblings = nextPage.nodes[parentId]?.children.length ?? 1
@@ -138,12 +139,12 @@ export function insertKeijamNode(
   layout.y = 48 + Math.max(0, siblings - 1) * 24
   if (context.parent !== 'free') layout.placed = false
   commitLayout(id, layout, context, breakpointId, isBase)
-  useEditorStore.getState().selectNode(id)
+  editorState().selectNode(id)
   return id
 }
 
 export function nudgeSelected(direction: 'left' | 'right' | 'up' | 'down', amount: number, breakpointId: string, isBase: boolean): void {
-  const store = useEditorStore.getState()
+  const store = editorState()
   const page = selectActiveCanvasPage(store)
   if (!page) return
   const rules = store.site?.styleRules
@@ -177,7 +178,7 @@ export function layoutWithRect(layout: KeijamLayout, rect: Rect, fixSize: boolea
 }
 
 function ensureCanvasRoot(nodeId: string, breakpointId: string, isBase: boolean): void {
-  const store = useEditorStore.getState()
+  const store = editorState()
   const page = selectActiveCanvasPage(store)
   if (!page || nodeId === page.rootNodeId) return
   const node = page.nodes[nodeId]
@@ -193,7 +194,7 @@ function ensureCanvasRoot(nodeId: string, breakpointId: string, isBase: boolean)
 }
 
 function ensureKeijamClass(nodeId: string): StyleRule | null {
-  const store = useEditorStore.getState()
+  const store = editorState()
   const existing = scopedRule(store.site?.styleRules, nodeId)
   const rule = existing ?? store.ensureNodeStyleClass(nodeId, 'Layer')
   if (!rule) return null
@@ -205,7 +206,7 @@ function ensureKeijamClass(nodeId: string): StyleRule | null {
       console.error('[keijam] could not name the layer class:', err)
     }
   }
-  return useEditorStore.getState().site?.styleRules[rule.id] ?? rule
+  return editorState().site?.styleRules[rule.id] ?? rule
 }
 
 function findAmbient(rules: StyleMap, selector: string): StyleRule | undefined {
@@ -216,7 +217,7 @@ function findAmbient(rules: StyleMap, selector: string): StyleRule | undefined {
 }
 
 function writeAmbient(selector: string, styles: Record<string, string | number> | null): void {
-  const store = useEditorStore.getState()
+  const store = editorState()
   const rules = store.site?.styleRules
   if (!rules) return
   const existing = findAmbient(rules, selector)

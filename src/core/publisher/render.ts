@@ -118,6 +118,12 @@ interface PublishPageOptions {
    */
   dynamicNodes?: 'holes' | 'inline'
   /**
+   * `full` (default) emits hole, loop, importmap, and runtime `<script>` tags
+   * when the page needs them. `static` never emits a script and renders every
+   * node inline. Keijam's clean export uses `static`.
+   */
+  runtime?: 'full' | 'static'
+  /**
    * Pre-built site CSS bundle. Required when `cssEmission === 'external'`.
    * Computed once per published-snapshot via `buildSiteCssBundle(site, registry)`.
    */
@@ -397,6 +403,16 @@ interface RuntimeAssetsBlock {
   anyScriptTag: boolean
 }
 
+const EMPTY_RUNTIME_ASSETS: RuntimeAssetsBlock = {
+  headRuntimeScripts: '',
+  bodyEndRuntimeScripts: '',
+  loopRuntimeScript: '',
+  holeRuntimeScript: '',
+  importmapTag: '',
+  importmap: undefined,
+  anyScriptTag: false,
+}
+
 function buildRuntimeAssetsBlock(
   options: PublishPageOptions,
   acc: RenderAccumulators,
@@ -547,7 +563,8 @@ export function publishPage(
   // Layer C: classify every node as static or dynamic before walking the tree.
   // Dynamic node ids are threaded into the RenderConfig so renderNode can
   // emit <instatic-hole> placeholders instead of recursing.
-  const dynamicNodeIds = options.dynamicNodes === 'inline'
+  const staticRuntime = options.runtime === 'static'
+  const dynamicNodeIds = staticRuntime || options.dynamicNodes === 'inline'
     ? new Set<string>()
     : findDynamicNodeIds(page, site, registry)
 
@@ -613,7 +630,7 @@ export function publishPage(
   )
 
   const meta = buildDocumentMetaTags(site, page, templateContext, options.documentMeta)
-  const runtime = buildRuntimeAssetsBlock(options, acc)
+  const runtime = staticRuntime ? EMPTY_RUNTIME_ASSETS : buildRuntimeAssetsBlock(options, acc)
   const csp = buildContentSecurityPolicy(runtime.anyScriptTag, runtime.importmap, acc.cspSources)
 
   const html = assembleHtmlDocument({

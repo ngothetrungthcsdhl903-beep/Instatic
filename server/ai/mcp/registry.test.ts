@@ -31,6 +31,9 @@ describe('mcp registry', () => {
     expect(names).toContain('site_delete_node')
     expect(names).toContain('site_apply_css')
     expect(names).toContain('site_set_color_tokens')
+    expect(names).toContain('keijam_create_node')
+    expect(names).toContain('keijam_export')
+    expect(names).toContain('keijam_undo')
     expect(tools.some((t) => t.execution === 'browser')).toBe(true)
   })
 
@@ -67,6 +70,8 @@ describe('mcp registry', () => {
     expect(tools.some((t) => t.mutates)).toBe(false)
     expect(tools.some((t) => t.name === 'mutate_page_tree')).toBe(false)
     expect(tools.some((t) => t.name === 'site_insert_html')).toBe(false)
+    expect(tools.some((t) => t.name === 'keijam_create_node')).toBe(false)
+    expect(tools.some((t) => t.name === 'keijam_get_node')).toBe(true)
   })
 
   it('exposes media_upload only with both write and media.write capabilities', () => {

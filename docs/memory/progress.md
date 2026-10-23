@@ -10,9 +10,13 @@ Done:
 - Inputs at rest use `--k-color-control-border`.
 - Cursor kit merged: `docs/memory/*`, `.cursor/rules/*`, `.cursor/mcp.json`.
 - `lint:unused`, `size` (editor ≤ 300 KB gzip), `analyze`, and dev-only `react-scan`.
+- Keijam MCP design commands (`keijam_create_node`, layout, sizing, style, breakpoints, components, tokens, selection, export, undo/redo) on the live editor bridge.
+- Verify-after-edit: each mutation returns a node diff. A mounted Keijam canvas also returns a screenshot of the affected node.
+- Shared undo with manual edits. Viewport culling and dirty paint signatures. Yoga WASM evaluated and not adopted. Clean HTML/CSS export, no runtime, 80 KB gzip.
 
 Left:
 
+- Group one agent command into a single undo step. Today each store write is its own step on the shared stack, so undoing a create may take more than one `keijam_undo`.
 - Official logo under `public/brand/` (favicon is still the placeholder). Noise tile is already there.
 - Pages / Layers / Assets tabs, Framer-style inspector controls, grid, effects, gap and padding handles, inline text.
 - Lucide everywhere. The monochrome rule is recorded; the shell and classic admin still render pixel-art icons.

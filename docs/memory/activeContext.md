@@ -1,7 +1,5 @@
 # Active context
 
-Focus: Phase 1 is on the draft PR. The site editor opens as Keijam (Layers / Insert, side-by-side breakpoint frames, Design / Prototype). Chrome uses fake glass. The accent is `--k-color-accent`. Classic chrome is one click away.
+Focus: Phase 2 agent control is on its own branch, stacked on the Phase 1 editor branch. External MCP clients and the in-editor agent share the `keijam_*` design commands. Those commands mutate the open editor, return a diff (and a screenshot when the Keijam canvas is open), and undo through the toolbar history.
 
-This pass adds the Cursor kit (memory bank, rules, MCP memory server) and the perf tools (knip, size-limit, bundle visualizer, dev-only react-scan).
-
-Next: install the official logo, replace pixel-art icons with monochrome Lucide (16px, stroke 1.5, `currentColor`), and build the Pages / Layers / Assets plus Framer-style inspector (grid, effects, gap and padding handles, inline text).
+Next: install the official logo, replace pixel-art icons with monochrome Lucide (16px, stroke 1.5, `currentColor`), and build the Pages / Layers / Assets plus Framer-style inspector (grid, effects, gap and padding handles, inline text). One agent command is still several undo steps when it writes a node and then its class.
