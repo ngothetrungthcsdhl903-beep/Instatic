@@ -26,7 +26,7 @@ import { selectActiveCanvasPage } from '@site/store/store'
 
 type StyleMap = Record<string, StyleRule>
 
-export function scopedRule(rules: StyleMap | undefined, nodeId: string): StyleRule | undefined {
+function scopedRule(rules: StyleMap | undefined, nodeId: string): StyleRule | undefined {
   if (!rules) return undefined
   for (const rule of Object.values(rules)) {
     if (rule.scope?.type === 'node' && rule.scope.nodeId === nodeId && rule.scope.role === 'module-style') {

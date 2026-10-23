@@ -1,0 +1,11 @@
+---
+description: React + TypeScript conventions
+globs: "**/*.{ts,tsx}"
+---
+- TS strict, no `any` or `@ts-ignore`. Type props explicitly. Discriminated unions for node types.
+- Function components, named exports, one component per file.
+- Derive state. Do not copy props into state with `useEffect`. Effects are for external systems.
+- Stable keys (node id). Do not use the array index as the key for a layer list.
+- Editor document state lives in the Zustand store. Components subscribe to the smallest slice.
+- Pointer and drag: refs plus `requestAnimationFrame`. Commit to the store on pointerup.
+- The React Compiler is on. Do not add `useMemo`, `useCallback`, or `memo` except the three exceptions in AGENTS.md.

@@ -93,8 +93,6 @@ export const LAYOUT_KEYS = [
   'overflow',
 ] as const
 
-export type LayoutKey = (typeof LAYOUT_KEYS)[number]
-
 const ALIGN_TO_CSS: Record<StackAlign, string> = {
   start: 'flex-start',
   center: 'center',

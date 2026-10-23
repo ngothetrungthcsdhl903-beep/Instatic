@@ -1,6 +1,7 @@
 import { defineConfig, type Plugin } from 'vite'
 import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
+import { visualizer } from 'rollup-plugin-visualizer'
 import path from 'path'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 
@@ -169,7 +170,16 @@ export default defineConfig({
     publicSiteDevProxyPlugin(),
     react(),
     babel({ presets: [reactCompilerPreset()] }),
-  ],
+    // ANALYZE=1 bun run analyze. The treemap is a build artifact, not runtime JS.
+    process.env.ANALYZE
+      ? visualizer({
+          filename: 'dist/stats.html',
+          gzipSize: true,
+          open: false,
+          title: 'Keijam bundle',
+        })
+      : null,
+  ].filter((plugin): plugin is Plugin => plugin !== null),
   resolve: {
     alias: {
       '@core': path.resolve(__dirname, 'src/core'),

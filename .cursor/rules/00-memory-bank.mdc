@@ -1,0 +1,8 @@
+---
+description: Memory workflow
+alwaysApply: true
+---
+- Before work: read AGENTS.md and docs/memory/{projectbrief,techContext,activeContext,progress,decisions}.md.
+- After work: update activeContext.md (current focus/next), progress.md (done/left), decisions.md (dated ADR line for any non-trivial choice).
+- Keep each file under 150 lines. Summarize. Do not append a log of every turn.
+- When a kit note and `decisions.md` disagree, `decisions.md` wins. The accent token is `--k-color-accent`. Chrome is fake glass, not `backdrop-filter`.

@@ -63,7 +63,11 @@ docs/
 │   └── use-async-resource.md       ← canonical async load hook; when to use vs. not
 │
 ├── memory/                     ← owner decisions that override earlier notes
-│   └── decisions.md                ← fake glass, design-system source of truth, accent, inputs
+│   ├── projectbrief.md             ← what Keijam is and what Phase 1 covers
+│   ├── techContext.md               ← stack, ports, knip / size-limit / visualizer
+│   ├── activeContext.md             ← current focus and next step
+│   ├── progress.md                  ← Phase 1 done and left
+│   └── decisions.md                 ← Figma UI3 density, blue accent, Lucide, fake glass
 ├── deployment/                 ← operator docs (running the thing)
 └── e2e/                        ← browser test protocols (agent-run + Playwright automation)
 ```
@@ -165,7 +169,7 @@ Three categories, three voices:
 | [features/editor-preferences.md](features/editor-preferences.md) | Catalog-driven local UI preferences for the editor                   |
 | [features/canvas-iframe-per-frame.md](features/canvas-iframe-per-frame.md) | Per-breakpoint iframe rendering in the visual editor canvas |
 | [features/keijam-editor.md](features/keijam-editor.md)                     | Keijam design surface: free/stack layout, direct manipulation, `--k-*` tokens |
-| [memory/decisions.md](memory/decisions.md)                                 | Owner decisions: fake glass, design-system source of truth, accent, inputs |
+| [memory/](memory/projectbrief.md)                                          | Phase 1 brief, tech context, progress, and decisions (UI3, accent, Lucide, fake glass) |
 
 ### Reference
 

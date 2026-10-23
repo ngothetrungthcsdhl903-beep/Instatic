@@ -69,8 +69,13 @@ Fallbacks: under `prefers-reduced-transparency` every level resolves to `--k-mat
 | `type-title` / `large-title` | 17/22 · 22/28 | Empty states, onboarding |
 | `type-mono` | 12/16 JetBrains Mono | Hex values, code, CSS export. NumberField uses Inter tnum, not mono |
 
-## 6. Iconography (Lucide)
-Sizes `--k-control-icon-sm/md/lg` = 14/16/20. Stroke `--k-control-icon-stroke` 1.5 (default), 2 at 14px for legibility. Color `currentColor` (`fg-secondary` idle → `fg-primary` hover → `accent` when active or toggled). Toolbar uses 16 in 28px buttons, inspector uses 14, and empty states use 20. Always pair an icon-only control with `aria-label` and a Tooltip.
+## 6. Iconography (Lucide, monochrome)
+
+Icons are Lucide outline icons, used the same way everywhere. Size is 16px (`--k-control-icon-md`). Stroke is 1.5 (`--k-control-icon-stroke`). Do not mix in 14px or 20px sizes, filled Lucide variants, or a second icon set.
+
+Color is one color: `currentColor`, so the icon inherits the text or icon token on its control (`fg-secondary` at rest, `fg-primary` on hover). The accent (`--k-color-accent`) is allowed only for the active or selected state. Do not paint an icon with a hardcoded color, a gradient, or more than one fill.
+
+No multicolor icons, no filled-color icons, no emoji used as icons, and no inline SVG stand-ins. An icon-only control still has an `aria-label` and a Tooltip.
 
 ## 7. Motion
 | Token | Value | Use |

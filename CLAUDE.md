@@ -1,6 +1,13 @@
 # Instatic
 
-This file is the **agent rule book**. Read it before changing code. Detailed explanations live in `docs/` — start at [`docs/README.md`](docs/README.md) for orientation and follow the links from there.
+Keijam is the product on this fork: a visual web design tool in the Framer/Figma vein, built on the Instatic engine (MIT). This file is the **agent rule book**. Read it before changing code. Detailed explanations live in `docs/` — start at [`docs/README.md`](docs/README.md) for orientation and follow the links from there. At the start of a task, also read `docs/memory/{projectbrief,techContext,activeContext,progress,decisions}.md`. After a non-trivial change, update `activeContext.md`, `progress.md`, and `decisions.md`.
+
+## Keijam agent kit
+
+- **Design.** Figma UI3 is the reference for density, type scale, and neutral grays. Do not copy Figma logos, icons, or brand assets. One blue accent, token `--k-color-accent` (the kit name `--k-accent` means this token). No hardcoded accent hex in components. Icons are monochrome Lucide outlines (16px, stroke 1.5, `currentColor`; accent only when active or selected). No multicolor, filled-color, or emoji icons. Chrome is fake glass from `design-system/` — no `backdrop-filter`. Spec: [`design-system/DESIGN_SYSTEM.md`](design-system/DESIGN_SYSTEM.md). Decisions: [`docs/memory/decisions.md`](docs/memory/decisions.md).
+- **License.** Keep the Instatic MIT notice in `LICENSE`. Revyme and Webstudio are AGPL: ideas only, never copy code. New dependencies must be MIT, ISC, BSD, or Apache-2.0.
+- **Canvas.** Document state lives in the editor store. Pointer moves go through refs and `requestAnimationFrame`; commit on pointerup. Do not `setState` on every mousemove.
+- **Perf.** The Site editor body (`dist/assets/AdminCanvasEditorBody-*.js`) stays ≤ 300 KB gzip (`bun run size`). `bun run lint:unused` (knip) stays clean of dead code. `ANALYZE=1 bun run analyze` writes `dist/stats.html`. `react-scan` loads only when `import.meta.env.DEV` is true.
 
 ## Local admin smoke tests
 
@@ -288,7 +295,7 @@ Note: `@core/framework-schema` is a dependency of both `@core/page-tree` (for `F
 - **Clear logic over clever logic.** Straight-line code beats a generic abstraction with two callers.
 - **Names must be honest.** A function called `renderPage` renders a page.
 - **One reason per module.** Files in `server/{repositories,handlers/cms,auth,plugins,publish}/*` and `src/core/*` are organized by responsibility — keep them that way.
-- **No dead code.** Unused exports, parameters, types, files: delete them. `fallow` (`npx fallow dead-code`) is the canonical tool; `knip`, `madge`, and `jscpd` remain available for second-opinion checks.
+- **No dead code.** Unused exports, parameters, types, files: delete them. `bun run lint:unused` (knip) is the unused-code check; `fallow` (`npx fallow dead-code`) is the coverage health check. `madge` and `jscpd` remain available for second-opinion checks.
 - **Health checks with coverage.** `bun run fallow:health` runs `bun test --coverage` and feeds the result to `fallow health --coverage`. Run before deciding whether a hotspot needs more tests vs. more refactoring.
 - **No `any` to escape a type problem.** Fix the type.
 - **No commented-out code.** Git remembers.
