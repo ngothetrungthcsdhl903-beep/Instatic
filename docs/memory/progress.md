@@ -13,6 +13,9 @@ Done:
 - Keijam MCP design commands (`keijam_create_node`, layout, sizing, style, breakpoints, components, tokens, selection, export, undo/redo) on the live editor bridge.
 - Verify-after-edit: each mutation returns a node diff. A mounted Keijam canvas also returns a screenshot of the affected node.
 - Shared undo with manual edits. Viewport culling and dirty paint signatures. Yoga WASM evaluated and not adopted. Clean HTML/CSS export, no runtime, 80 KB gzip.
+- Code components: single-file TSX, property controls in the inspector, code panel, Framer paste (components run as a lowered preview; overrides are stored). `keijam_generate_component` builds one from a description via the design commands.
+- Animate mode: state machine, keyframe timeline with record/capture, easing curve. CSS export, Web Animations runner only when needed.
+- Lazy WebGL, Three.js, and GSAP loaders. Reference notes in `docs/memory/references.md`.
 
 Left:
 

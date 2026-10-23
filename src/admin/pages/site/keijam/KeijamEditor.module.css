@@ -176,6 +176,48 @@
     gap: var(--space-3xs);
 }
 
+.shell[data-kj-mode='animate'] {
+    grid-template-rows: var(--k-layout-toolbar-height) minmax(0, 1fr) 72px;
+}
+
+.timeline {
+    grid-column: 2;
+    grid-row: 3;
+    border-top: 1px solid var(--k-color-separator);
+    background: var(--k-color-bg-panel);
+}
+
+.codeInput {
+    display: block;
+    box-sizing: border-box;
+    width: calc(100% - var(--space-l));
+    min-height: 180px;
+    margin: 0 var(--space-s) var(--space-s);
+    padding: var(--space-s);
+    border: 1px solid var(--k-color-control-border);
+    border-radius: var(--k-radius-md);
+    background: var(--k-color-bg-control);
+    color: var(--k-color-fg-primary);
+    font-family: var(--k-font-family-mono);
+    font-size: var(--k-type-mono-size);
+    line-height: var(--k-type-mono-line);
+}
+
+.curve {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-px);
+    height: 36px;
+    margin: 0 var(--space-m) var(--space-s);
+}
+
+.curveBar {
+    flex: 1;
+    min-height: 1px;
+    background: var(--k-color-accent);
+    height: var(--kj-curve);
+}
+
 .viewport {
     position: relative;
     min-width: 0;

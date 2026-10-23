@@ -123,6 +123,42 @@ describe('Keijam design commands', () => {
     expect(pageNodes()[id]).toBeUndefined()
   })
 
+  it('generates a component from a description through the design commands', async () => {
+    const site = useEditorStore.getState().createSite('Keijam')
+    const rootId = site.pages[0].rootNodeId
+    const created = await executeKeijamTool('keijam_generate_component', {
+      description: 'Primary button for the launch',
+      parentId: rootId,
+    })
+    expect(created.ok).toBe(true)
+    const data = created.data as { nodeIds: string[]; controls: string[]; fileId: string }
+    expect(data.controls).toContain('label')
+    const node = pageNodes()[data.nodeIds[0]]
+    expect(node.props.htmlAttributes).toMatchObject({ 'data-kj-code': data.fileId })
+    const file = useEditorStore.getState().site?.files.find((item) => item.id === data.fileId)
+    expect(file?.content).toContain('addPropertyControls')
+    expect(file?.content).toContain('from "framer"')
+
+    const motion = await executeKeijamTool('keijam_set_motion', {
+      nodeId: data.nodeIds[0],
+      machine: {
+        initial: 'idle',
+        inputs: [],
+        states: [{ id: 'idle', name: 'Idle', durationMs: 300, keyframes: [{ timeMs: 300, opacity: 1, y: -8 }] }],
+        transitions: [],
+      },
+    })
+    expect(motion.ok).toBe(true)
+
+    const effect = await executeKeijamTool('keijam_set_effect', { nodeId: data.nodeIds[0], effect: 'gsap' })
+    expect(effect.ok).toBe(true)
+    const exported = await executeKeijamTool('keijam_export', {})
+    const clean = exported.data as { html: string; withinBudget: boolean }
+    expect(clean.withinBudget).toBe(true)
+    expect(clean.html).toContain('esm.sh/gsap')
+    expect(clean.html).toContain('@keyframes')
+  })
+
   it('rejects an unknown breakpoint before writing', async () => {
     const site = useEditorStore.getState().createSite('Keijam')
     const rootId = site.pages[0].rootNodeId

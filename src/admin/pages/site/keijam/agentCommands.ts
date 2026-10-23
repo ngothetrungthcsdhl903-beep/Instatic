@@ -19,7 +19,11 @@ import {
   KeijamDeleteComponentInputSchema,
   KeijamDeleteNodeInputSchema,
   KeijamExportInputSchema,
+  KeijamGenerateComponentInputSchema,
   KeijamGetNodeInputSchema,
+  KeijamPasteComponentInputSchema,
+  KeijamSetEffectInputSchema,
+  KeijamSetMotionInputSchema,
   KeijamInsertComponentInputSchema,
   KeijamListNodesInputSchema,
   KeijamSelectInputSchema,
@@ -38,8 +42,15 @@ import { getNodeDisplayName, type Breakpoint, type PageNode, type SiteDocument, 
 import { getErrorMessage } from '@core/utils/errorMessage'
 import {
   applyLayoutPatch,
+  componentFromDescription,
+  componentIdent,
   diffDesignNodes,
   exportCleanDocument,
+  MOTION_FILE_PATH,
+  MotionMachineSchema,
+  motionAttributeValue,
+  parseCodeComponent,
+  parseMotionDocument,
   type DesignNodeSnapshot,
   type LayoutPatch,
   type StylePatch,
@@ -109,6 +120,14 @@ export async function executeKeijamTool(toolName: string, rawInput: unknown): Pr
         return tokenResult('type', runSetTypeScale(parseValue(SetTypeScaleInputSchema, rawInput)))
       case 'keijam_set_spacing_scale':
         return tokenResult('spacing', runSetSpacingScale(parseValue(SetSpacingScaleInputSchema, rawInput)))
+      case 'keijam_generate_component':
+        return await runGenerate(parseValue(KeijamGenerateComponentInputSchema, rawInput))
+      case 'keijam_paste_component':
+        return await runPaste(parseValue(KeijamPasteComponentInputSchema, rawInput))
+      case 'keijam_set_effect':
+        return await runEffect(parseValue(KeijamSetEffectInputSchema, rawInput))
+      case 'keijam_set_motion':
+        return await runMotion(parseValue(KeijamSetMotionInputSchema, rawInput))
       case 'keijam_export':
         return await runExport(parseValue(KeijamExportInputSchema, rawInput).pageId)
       case 'keijam_undo':
@@ -299,6 +318,114 @@ async function runExport(pageId: string | undefined): Promise<AiToolOutput> {
   if (!page) return aiToolError(pageId ? `Page not found: ${pageId}` : 'No page is open in the editor.')
   const clean = await exportCleanDocument(page, site, registry)
   return aiToolOk(clean)
+}
+
+async function runGenerate(input: {
+  description: string
+  name?: string
+  parentId?: string
+}): Promise<AiToolOutput> {
+  const frame = frameContext()
+  const before = captureSnapshots(frame)
+  const parentId = resolveParent(input.parentId)
+  const id = insertKeijamNode('frame', parentId, frame.breakpointId, frame.isBase)
+  if (!id) return aiToolError('Could not create the component frame.')
+  const ident = componentIdent(input.name, input.description)
+  const source = componentFromDescription(input.description, ident)
+  const fileId = writeComponentFile(ident, source)
+  bindCode(id, fileId, source)
+  const parsed = parseCodeComponent(source)
+  return finishEdit(before, [id], frame, {
+    fileId,
+    component: parsed.name,
+    controls: parsed.controls.map((control) => control.key),
+  })
+}
+
+async function runPaste(input: {
+  source: string
+  name?: string
+  nodeId?: string
+  parentId?: string
+}): Promise<AiToolOutput> {
+  const parsed = parseCodeComponent(input.source)
+  if (parsed.kind === 'unknown') return aiToolError(parsed.warnings[0] ?? 'Unrecognized component.')
+  const frame = frameContext()
+  const before = captureSnapshots(frame)
+  let nodeId = input.nodeId
+  if (nodeId) requireNode(nodeId)
+  else {
+    nodeId = insertKeijamNode('frame', resolveParent(input.parentId), frame.breakpointId, frame.isBase)
+  }
+  if (!nodeId) return aiToolError('Could not bind the component.')
+  const fileId = writeComponentFile(componentIdent(input.name, parsed.name), input.source)
+  if (parsed.kind === 'component') bindCode(nodeId, fileId, input.source)
+  else writeAttr(nodeId, 'data-kj-code', fileId)
+  return finishEdit(before, [nodeId], frame, {
+    fileId,
+    kind: parsed.kind,
+    warnings: parsed.warnings,
+    controls: parsed.controls.map((control) => control.key),
+  })
+}
+
+async function runEffect(input: { nodeId: string; effect: 'none' | 'webgl' | 'three' | 'gsap' }): Promise<AiToolOutput> {
+  const frame = frameContext()
+  requireNode(input.nodeId)
+  const before = captureSnapshots(frame)
+  writeAttr(input.nodeId, 'data-kj-effect', input.effect === 'none' ? null : input.effect)
+  return finishEdit(before, [input.nodeId], frame, { effect: input.effect })
+}
+
+async function runMotion(input: { nodeId: string; machine: unknown }): Promise<AiToolOutput> {
+  const frame = frameContext()
+  requireNode(input.nodeId)
+  const machine = parseValue(MotionMachineSchema, input.machine)
+  const before = captureSnapshots(frame)
+  const store = editorState()
+  const files = store.site?.files
+  if (!files) return aiToolError('No site is open.')
+  const existing = files.find((file) => file.path === MOTION_FILE_PATH)
+  const doc = parseMotionDocument(existing?.content)
+  doc.byNodeId[input.nodeId] = machine
+  const text = JSON.stringify(doc)
+  if (existing) store.updateFileContent(existing.id, text)
+  else store.createFile(MOTION_FILE_PATH, 'config', text)
+  writeAttr(input.nodeId, 'data-kj-motion', motionAttributeValue(input.nodeId))
+  return finishEdit(before, [input.nodeId], frame, { states: machine.states.map((state) => state.id) })
+}
+
+function writeComponentFile(ident: string, source: string): string {
+  const store = editorState()
+  const files = store.site?.files
+  if (!files) throw new Error('No site is open.')
+  let path = `src/components/${ident}.tsx`
+  let suffix = 2
+  while (files.some((file) => file.path === path)) {
+    path = `src/components/${ident}-${suffix}.tsx`
+    suffix += 1
+  }
+  return store.createFile(path, 'component', source)
+}
+
+function bindCode(nodeId: string, fileId: string, source: string): void {
+  const parsed = parseCodeComponent(source)
+  writeAttr(nodeId, 'data-kj-code', fileId)
+  writeAttr(nodeId, 'data-kj-values', JSON.stringify(parsed.defaults))
+}
+
+function writeAttr(nodeId: string, name: string, value: string | null): void {
+  const node = requireNode(nodeId)
+  const raw = node.props.htmlAttributes
+  const attrs: Record<string, string> = {}
+  if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
+    for (const [key, current] of Object.entries(raw)) {
+      if (typeof current === 'string') attrs[key] = current
+    }
+  }
+  if (value === null) delete attrs[name]
+  else attrs[name] = value
+  editorState().updateNodeProps(nodeId, { htmlAttributes: attrs })
 }
 
 async function runHistory(direction: 'undo' | 'redo'): Promise<AiToolOutput> {

@@ -9,7 +9,9 @@ import { useEditorStore, selectActiveCanvasPage } from '@site/store/store'
 import { PRODUCT_NAME } from '../../../../keijam'
 import { KeijamCanvas } from './KeijamCanvas'
 import { KeijamInsert, KeijamLayers } from './KeijamLayers'
-import { KeijamInteractions, KeijamProperties } from './KeijamProperties'
+import { KeijamAnimate, KeijamTimeline } from './KeijamAnimate'
+import { KeijamCode } from './KeijamCode'
+import { KeijamProperties } from './KeijamProperties'
 import { nudgeSelected } from './layoutBridge'
 import styles from './KeijamEditor.module.css'
 
@@ -29,7 +31,10 @@ export function KeijamEditor({ editable, loadError, onUseClassic }: KeijamEditor
   )
   const [activeId, setActiveId] = useState<string | null>(null)
   const [leftTab, setLeftTab] = useState<'layers' | 'insert'>('layers')
-  const [rightTab, setRightTab] = useState<'design' | 'prototype'>('design')
+  const [mode, setMode] = useState<'design' | 'animate'>('design')
+  const [rightTab, setRightTab] = useState<'design' | 'animate' | 'code'>('design')
+  const [playhead, setPlayhead] = useState(0)
+  const [recording, setRecording] = useState(false)
   const active = breakpoints.find((item) => item.id === activeId) ?? widest
   const activeBreakpointId = active?.id ?? 'desktop'
   const isBase = !widest || activeBreakpointId === widest.id
@@ -86,7 +91,7 @@ export function KeijamEditor({ editable, loadError, onUseClassic }: KeijamEditor
   }, [activeBreakpointId, editable, isBase])
 
   return (
-    <div className={styles.shell} data-kj-shell="">
+    <div className={styles.shell} data-kj-shell="" data-kj-mode={mode}>
       <header className={styles.toolbar} data-k-material="regular">
         <span className={styles.brand}>
           <span className={styles.mark} aria-hidden="true" />
@@ -99,6 +104,22 @@ export function KeijamEditor({ editable, loadError, onUseClassic }: KeijamEditor
           <RedoIcon size={14} />
         </Button>
         <span className={styles.toolbarSpacer} />
+        <Button
+          variant="ghost"
+          size="xs"
+          pressed={mode === 'design'}
+          onClick={() => { setMode('design'); setRightTab('design') }}
+        >
+          Design
+        </Button>
+        <Button
+          variant="ghost"
+          size="xs"
+          pressed={mode === 'animate'}
+          onClick={() => { setMode('animate'); setRightTab('animate') }}
+        >
+          Animate
+        </Button>
         <span className={styles.zoomReadout}>{active?.label ?? 'Desktop'}</span>
         <span className={styles.toolbarSpacer} />
         <Button variant="ghost" size="xs" onClick={onUseClassic}>Classic</Button>
@@ -130,18 +151,37 @@ export function KeijamEditor({ editable, loadError, onUseClassic }: KeijamEditor
         />
       )}
 
+      {mode === 'animate' ? (
+        <KeijamTimeline
+          playhead={playhead}
+          recording={recording}
+          onPlayhead={setPlayhead}
+          onRecording={setRecording}
+        />
+      ) : null}
+
       <aside className={`${styles.panel} ${styles.panelRight}`} data-k-material="regular" aria-label="Properties">
         <div className={styles.tabs}>
-          <Button variant="ghost" size="sm" className={styles.tab} pressed={rightTab === 'design'} onClick={() => setRightTab('design')}>
+          <Button variant="ghost" size="sm" className={styles.tab} pressed={rightTab === 'design'} onClick={() => { setRightTab('design'); setMode('design') }}>
             Design
           </Button>
-          <Button variant="ghost" size="sm" className={styles.tab} pressed={rightTab === 'prototype'} onClick={() => setRightTab('prototype')}>
-            Prototype
+          <Button variant="ghost" size="sm" className={styles.tab} pressed={rightTab === 'animate'} onClick={() => { setRightTab('animate'); setMode('animate') }}>
+            Animate
+          </Button>
+          <Button variant="ghost" size="sm" className={styles.tab} pressed={rightTab === 'code'} onClick={() => setRightTab('code')}>
+            Code
           </Button>
         </div>
-        {rightTab === 'design'
-          ? <KeijamProperties activeBreakpointId={activeBreakpointId} isBase={isBase} />
-          : <KeijamInteractions activeBreakpointId={activeBreakpointId} isBase={isBase} />}
+        {rightTab === 'design' ? <KeijamProperties activeBreakpointId={activeBreakpointId} isBase={isBase} /> : null}
+        {rightTab === 'animate' ? (
+          <KeijamAnimate
+            playhead={playhead}
+            recording={recording}
+            onPlayhead={setPlayhead}
+            onRecording={setRecording}
+          />
+        ) : null}
+        {rightTab === 'code' ? <KeijamCode /> : null}
       </aside>
     </div>
   )
