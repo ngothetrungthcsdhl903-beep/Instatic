@@ -26,13 +26,18 @@ export function KeijamCode() {
   const node = selectedId && page ? page.nodes[selectedId] : undefined
   const fileId = node ? attr(node.props.htmlAttributes, 'data-kj-code') : ''
   const file = files.find((item) => item.id === fileId)
+  const selectionKey = selectedId ?? 'none'
+  const [noticeFor, setNoticeFor] = useState<{ id: string; text: string } | null>(null)
+  const notice = noticeFor?.id === selectionKey ? noticeFor.text : ''
   return (
     <CodeDraft
-      key={`${selectedId ?? 'none'}:${file?.updatedAt ?? 0}`}
+      key={`${selectionKey}:${file?.updatedAt ?? 0}`}
       nodeId={node?.id ?? null}
       file={file}
       source={file?.content ?? ''}
       valuesJson={node ? attr(node.props.htmlAttributes, 'data-kj-values') : ''}
+      notice={notice}
+      onNotice={(text) => setNoticeFor({ id: selectionKey, text })}
     />
   )
 }
@@ -42,9 +47,10 @@ function CodeDraft(props: {
   file: SiteFile | undefined
   source: string
   valuesJson: string
+  notice: string
+  onNotice: (text: string) => void
 }) {
   const [source, setSource] = useState(props.source)
-  const [notice, setNotice] = useState('')
   const parsed = parseCodeComponent(source)
   const values = { ...parsed.defaults, ...readValuesJson(props.valuesJson) }
 
@@ -64,11 +70,11 @@ function CodeDraft(props: {
       writeAttr(nodeId, 'data-kj-code', fileId)
       writeAttr(nodeId, 'data-kj-values', JSON.stringify({ ...parsed.defaults }))
       store.selectNode(nodeId)
-      setNotice(parsed.kind === 'override'
+      props.onNotice(parsed.kind === 'override'
         ? 'Override stored. It is not executed.'
         : parsed.warnings[0] || 'Saved.')
     } catch (err) {
-      setNotice(getErrorMessage(err, 'Could not save the component.'))
+      props.onNotice(getErrorMessage(err, 'Could not save the component.'))
     }
   }
 
@@ -94,7 +100,7 @@ function CodeDraft(props: {
       <div className={styles.field}>
         <Button variant="secondary" size="xs" onClick={save}>Save</Button>
       </div>
-      {notice ? <p className={styles.hint} role="status">{notice}</p> : null}
+      {props.notice ? <p className={styles.hint} role="status">{props.notice}</p> : null}
       {parsed.kind === 'component' ? (
         <>
           <p className={styles.section}>{parsed.name}</p>
